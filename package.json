@@ -1,5 +1,5 @@
 {
-  "name": "aptosmoneyfimockupupgrade",
+  "name": "testquynx",
   "description": "Money TypeScript SDK",
   "packageManager": "pnpm@8.15.1",
   "license": "Apache-2.0",
@@ -81,5 +81,5 @@
     "typedoc-plugin-missing-exports": "^4.0.0",
     "typescript": "^5.8.2"
   },
-  "version": "0.0.1"
+  "version": "0.0.4"
 }
