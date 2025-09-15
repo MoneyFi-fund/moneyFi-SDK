@@ -53,3 +53,50 @@ Builds a **raw deposit transaction payload** for depositing USDC.
 *   **Returns**
     
     *   Uint8Array value
+
+🔹 getOrCreatePartnership(address)
+----------------------------------
+
+Creates a **new user** (non-partnership) or retrieves an existing one.Can optionally include a referral code.
+
+**Parameters**
+
+*   address → Aptos wallet address (AccountAddressInput)
+    
+
+**Returns**
+
+*   Partnership object
+    
+
+🔹 getOrCreateUser(address, refBy)
+----------------------------------
+
+Creates a **new user** (non-partnership) or retrieves an existing one.Can optionally include a referral code.
+
+**Parameters**
+
+*   address → Aptos wallet address (AccountAddressInput)
+    
+*   refBy → Referral identifier (string)
+    
+
+**Returns**
+
+*   User object
+    
+
+🔹 getTxInitializationAccount(address)
+--------------------------------------
+
+Initializes a user account on the MoneyFi backend.This links the Aptos wallet address with the Aptos fullnode URL.
+
+**Parameters**
+
+*   address → Aptos wallet address (AccountAddressInput)
+    
+
+**Returns**
+
+*   Initialization transaction object
+    

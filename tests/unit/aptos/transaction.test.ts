@@ -36,4 +36,31 @@ describe("transaction", () => {
 
     console.log({deserializedTransaction})
   });
+
+
+  test("it should return partnership account", async () => {
+    let existWalletAccount = "0x0ae1e1817aaf1cd020151cd117843988d9c524e202ccb2c726151163c782037f"; 
+
+    const moneyFiAptos = new MoneyFiAptos();
+    let result = await moneyFiAptos.getOrCreatePartnership(existWalletAccount); 
+    expect(result.is_partnership).toBe(true);
+    expect(result.address).toBe(existWalletAccount);
+  });
+
+  test("it should return user account", async () => {
+    let existWalletAccount = "0xfc3ce8487b26cbe85e7b0b4f5bc093e3669042632b1b9ee49aa46341f6415e02"; 
+
+    const moneyFiAptos = new MoneyFiAptos();
+    let result = await moneyFiAptos.getOrCreateUser(existWalletAccount); 
+    expect(result.is_partnership).toBe(false);
+    expect(result.address).toBe(existWalletAccount);
+  });
+  
+  test("it should return tx initialization account", async () => {
+    let existWalletAccount = "0xfc3ce8487b26cbe85e7b0b4f5bc093e3669042632b1b9ee49aa46341f6415e02"; 
+
+    const moneyFiAptos = new MoneyFiAptos();
+    let result = await moneyFiAptos.getTxInitializationWalletAccount(existWalletAccount); 
+  });
+    
 });
