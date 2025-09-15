@@ -15,7 +15,6 @@ export async function apiPost<T>(
   data?: any,
 ): Promise<T> {
   const url = `${MoneyFiBaseApiUrl}/${endpoint}`; 
-  console.log({url})
   const resp = await axios.post(url, data);
   return resp.data;
 }
@@ -29,3 +28,5 @@ export async function apiGet<T>(
   const resp = await api.get(url, { params });
   return resp.data;
 }
+
+
