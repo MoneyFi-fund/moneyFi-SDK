@@ -4,8 +4,8 @@ import { Aptos, AptosConfig, AccountAddressInput, Network, AccountAddress, MoveV
 import { APTOS_ADDRESS } from "../../utils/const"
 import { MONEY_FI_APTOS_FUNCTION_ID } from "../../utils/const";
 import { MoneyFiErros } from "../../errors/index";
-import { MoneyFiSetting, CreateUser, User } from "../../types/types";
-import {apiPost, apiGet} from "../../utils/helpers"; 
+import { MoneyFiSetting, CreateUser, User, UserStatistic } from "../../types/types";
+import { apiPost, apiGet } from "../../utils/helpers";
 
 export class MoneyFiAptos {
   readonly aptosClient: Aptos;
@@ -24,22 +24,22 @@ export class MoneyFiAptos {
   }
 
   async getOrCreatePartnership(address: AccountAddressInput): Promise<User> {
-    console.log({ user_address: {Aptos: address}, is_partnership: true});
-  
-    return await apiPost("sdk-create-user", { user_address: {Aptos: address}, is_partnership: true});
+    console.log({ user_address: { Aptos: address }, is_partnership: true });
+
+    return await apiPost("sdk-create-user", { user_address: { Aptos: address }, is_partnership: true });
   }
 
   async getOrCreateUser(address: AccountAddressInput, refBy?: string): Promise<User> {
-    let body: CreateUser = {user_address: {Aptos: address}, is_partnership: false}; 
-    if(refBy) {
-      body.ref_by = refBy; 
+    let body: CreateUser = { user_address: { Aptos: address }, is_partnership: false };
+    if (refBy) {
+      body.ref_by = refBy;
     }
 
     return await apiPost("sdk-create-user", body);
   }
 
   async getTxInitializationWalletAccount(address: AccountAddressInput): Promise<any> {
-     return await apiPost("sdk-create-wallet-account", { user_address: {Aptos: address},  client_url: this.aptosConfig.getRequestUrl(AptosApiType.FULLNODE)});
+    return await apiPost("sdk-create-wallet-account", { user_address: { Aptos: address }, client_url: this.aptosConfig.getRequestUrl(AptosApiType.FULLNODE) });
   }
 
   async hasWalletAccount(address: AccountAddressInput): Promise<MoveValue> {
@@ -76,4 +76,9 @@ export class MoneyFiAptos {
     });
     return transaction.rawTransaction.bcsToBytes();
   }
+
+  async getUserStatistic(address: AccountAddressInput): Promise<UserStatistic> {
+    return await apiGet("sdk-user-statistic", { address: address, client_url: this.aptosConfig.getRequestUrl(AptosApiType.FULLNODE) });
+  }
+
 }
