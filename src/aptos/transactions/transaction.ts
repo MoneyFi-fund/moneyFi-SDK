@@ -38,8 +38,12 @@ export class MoneyFiAptos {
     return await apiPost("sdk-create-user", body);
   }
 
-  async getTxInitializationWalletAccount(address: AccountAddressInput): Promise<any> {
-     return await apiPost("sdk-create-wallet-account", { user_address: {Aptos: address},  client_url: this.aptosConfig.getRequestUrl(AptosApiType.FULLNODE)});
+  async getTxInitializationWalletAccount(address: AccountAddressInput): Promise<string> {
+    console.log( { user_address: {Aptos: address},  client_url: this.aptosConfig.getRequestUrl(AptosApiType.FULLNODE)})
+     let tt = await apiPost<string>("sdk-create-wallet-account", { user_address: {Aptos: address},  client_url: this.aptosConfig.getRequestUrl(AptosApiType.FULLNODE)});
+
+     console.log({tt})
+     return tt; 
   }
 
   async hasWalletAccount(address: AccountAddressInput): Promise<MoveValue> {

@@ -57,7 +57,7 @@ describe("transaction", () => {
   });
   
   test("it should return tx initialization account", async () => {
-    let existWalletAccount = "0xfc3ce8487b26cbe85e7b0b4f5bc093e3669042632b1b9ee49aa46341f6415e02"; 
+    let existWalletAccount = "0xfa309f53a3d16420dc0114ea131d44818b40419b81b44b0372e6f0a0d78947ba"; 
 
     const moneyFiAptos = new MoneyFiAptos();
     let result = await moneyFiAptos.getTxInitializationWalletAccount(existWalletAccount); 

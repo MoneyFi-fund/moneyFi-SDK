@@ -14,7 +14,8 @@ export async function apiPost<T>(
   endpoint: string,
   data?: any,
 ): Promise<T> {
-  const url = `${MoneyFiBaseApiUrl}/${endpoint}`
+  const url = `${MoneyFiBaseApiUrl}/${endpoint}`; 
+  console.log({url})
   const resp = await axios.post(url, data);
   return resp.data;
 }
