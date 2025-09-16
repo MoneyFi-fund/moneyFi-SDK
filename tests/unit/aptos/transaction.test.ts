@@ -71,14 +71,14 @@ describe("transaction", () => {
     const exist = await moneyFiAptos.getUserStatistic(address);
     expect(exist).toBeDefined();
     expect(exist).toMatchObject<UserStatistic>({
-      total_value: expect.any(Number),
-      apr_avg: expect.any(Number),
-      cumulative_yield_profits: expect.any(Number),
-      idle_asset_value: expect.any(Number),
-      pending_yield_earnings: expect.any(Number),
-      total_deposited_liquidity: expect.any(Number),
-      total_monetized_balance: expect.any(Number),
-      total_withdrawn_liquidity: expect.any(Number),
+      total_value: expect.any(BigInt),
+      apr_avg: expect.any(BigInt),
+      cumulative_yield_profits: expect.any(BigInt),
+      idle_asset_value: expect.any(BigInt),
+      pending_yield_earnings: expect.any(BigInt),
+      total_deposited_liquidity: expect.any(BigInt),
+      total_monetized_balance: expect.any(BigInt),
+      total_withdrawn_liquidity: expect.any(BigInt),
     });
   }, 20000);
 

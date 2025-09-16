@@ -21,14 +21,14 @@ export type User = {
 }
 
 export type UserStatistic = {
-  total_value: Number;
-  idle_asset_value: Number;
-  total_deposited_liquidity: Number;
-  cumulative_yield_profits: Number;
-  total_monetized_balance: Number;
-  pending_yield_earnings: Number;
-  total_withdrawn_liquidity: Number;
-  apr_avg: Number;
+  total_value: BigInt;
+  idle_asset_value: BigInt;
+  total_deposited_liquidity: BigInt;
+  cumulative_yield_profits: BigInt;
+  total_monetized_balance: BigInt;
+  pending_yield_earnings: BigInt;
+  total_withdrawn_liquidity: BigInt;
+  apr_avg: BigInt;
 }
 
 export type UserAnalytics = {

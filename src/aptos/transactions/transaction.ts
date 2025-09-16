@@ -24,7 +24,7 @@ export class MoneyFiAptos {
   }
 
   async getOrCreatePartnership(address: AccountAddressInput): Promise<User> {
-    return await apiPost("sdk-create-user", { user_address: { Aptos: address }, is_partnership: true });
+    return await apiPost("sdk/create-user", { user_address: { Aptos: address }, is_partnership: true });
   }
 
   async getOrCreateUser(address: AccountAddressInput, refBy?: string): Promise<User> {
@@ -33,11 +33,11 @@ export class MoneyFiAptos {
       body.ref_by = refBy;
     }
 
-    return await apiPost("sdk-create-user", body);
+    return await apiPost("sdk/create-user", body);
   }
 
   async getTxInitializationWalletAccount(address: AccountAddressInput): Promise<string> {
-    return await apiPost<string>("sdk-create-wallet-account", { user_address: {Aptos: address},  client_url: this.aptosConfig.getRequestUrl(AptosApiType.FULLNODE)});
+    return await apiPost<string>("sdk/create-wallet-account", { user_address: { Aptos: address }, client_url: this.aptosConfig.getRequestUrl(AptosApiType.FULLNODE) });
   }
 
   async hasWalletAccount(address: AccountAddressInput): Promise<MoveValue> {
@@ -76,7 +76,7 @@ export class MoneyFiAptos {
   }
 
   async getUserStatistic(address: AccountAddressInput): Promise<UserStatistic> {
-    return await apiGet("sdk-user-statistic", { address: address, client_url: this.aptosConfig.getRequestUrl(AptosApiType.FULLNODE) });
+    return await apiGet("sdk/user-statistic", { address: address, client_url: this.aptosConfig.getRequestUrl(AptosApiType.FULLNODE) });
   }
 
 }
