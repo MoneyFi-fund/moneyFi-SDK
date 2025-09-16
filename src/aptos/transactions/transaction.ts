@@ -4,7 +4,7 @@ import { Aptos, AptosConfig, AccountAddressInput, Network, AccountAddress, MoveV
 import { APTOS_ADDRESS } from "../../utils/const"
 import { MONEY_FI_APTOS_FUNCTION_ID } from "../../utils/const";
 import { MoneyFiErros } from "../../errors/index";
-import { MoneyFiSetting, CreateUser, User, UserStatistic } from "../../types/types";
+import { MoneyFiSetting, CreateUser, User, UserStatistic, ReqWithdrawPayload,WithdrawStatusResponse } from "../../types/types";
 import { apiPost, apiGet } from "../../utils/helpers";
 
 export class MoneyFiAptos {
@@ -77,6 +77,18 @@ export class MoneyFiAptos {
 
   async getUserStatistic(address: AccountAddressInput): Promise<UserStatistic> {
     return await apiGet("sdk/user-statistic", { address: address, client_url: this.aptosConfig.getRequestUrl(AptosApiType.FULLNODE) });
+  }
+
+  async reqWithdraw(
+    address: AccountAddressInput,
+    payload: ReqWithdrawPayload
+  ): Promise<void> {
+    return await apiPost(`sdk/req-withdraw?address=${address}`, payload);
+  }
+
+
+  async getWithdrawStatus(address: AccountAddressInput) : Promise<WithdrawStatusResponse>{
+    return await apiGet(`sdk/req-withdraw-status?address=${address}`);
   }
 
 }
