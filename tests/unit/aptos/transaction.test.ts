@@ -91,5 +91,18 @@ describe("transaction", () => {
     expect(exist).toEqual({ status: "done" });
   });
 
+    test("it should return tx withdraw payload", async () => {
+    let existWalletAccount = "0x0ae1e1817aaf1cd020151cd117843988d9c524e202ccb2c726151163c782037f";
+    let depositAmount = 1000;
+
+    const moneyFiAptos = new MoneyFiAptos();
+    const transaction = await moneyFiAptos.getWithdrawTxPayload(APTOS_ADDRESS.USDC, existWalletAccount, BigInt(depositAmount));
+    console.log("transaction");
+    console.log({ transaction });
+    const deserializer = new Deserializer(transaction);
+    const deserializedTransaction = RawTransaction.deserialize(deserializer);
+
+    console.log({ deserializedTransaction })
+  });
 
 });
