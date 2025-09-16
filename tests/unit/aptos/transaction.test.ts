@@ -6,7 +6,8 @@ import {
 } from "../../../src";
 import { APTOS_ADDRESS } from "../../../src";
 import { Deserializer, RawTransaction } from "@aptos-labs/ts-sdk";
-import { UserStatistic } from '../../../src/types/types'
+import { UserStatistic, WithdrawStatusResponse } from '../../../src/types/types'
+import { json } from "stream/consumers";
 
 describe("transaction", () => {
   test("it should return true with exist wallet account", async () => {
@@ -58,7 +59,7 @@ describe("transaction", () => {
   });
 
   test("it should return tx initialization account", async () => {
-    let existWalletAccount = "0xfa309f53a3d16420dc0114ea131d44818b40419b81b44b0372e6f0a0d78947ba"; 
+    let existWalletAccount = "0xfa309f53a3d16420dc0114ea131d44818b40419b81b44b0372e6f0a0d78947ba";
 
     const moneyFiAptos = new MoneyFiAptos();
     let result = await moneyFiAptos.getTxInitializationWalletAccount(existWalletAccount);
@@ -71,15 +72,37 @@ describe("transaction", () => {
     const exist = await moneyFiAptos.getUserStatistic(address);
     expect(exist).toBeDefined();
     expect(exist).toMatchObject<UserStatistic>({
-      total_value: expect.any(BigInt),
-      apr_avg: expect.any(BigInt),
-      cumulative_yield_profits: expect.any(BigInt),
-      idle_asset_value: expect.any(BigInt),
-      pending_yield_earnings: expect.any(BigInt),
-      total_deposited_liquidity: expect.any(BigInt),
-      total_monetized_balance: expect.any(BigInt),
-      total_withdrawn_liquidity: expect.any(BigInt),
+      total_value: expect.any(Number),
+      apr_avg: expect.any(Number),
+      cumulative_yield_profits: expect.any(Number),
+      idle_asset_value: expect.any(Number),
+      pending_yield_earnings: expect.any(Number),
+      total_deposited_liquidity: expect.any(Number),
+      total_monetized_balance: expect.any(Number),
+      total_withdrawn_liquidity: expect.any(Number),
     });
   }, 20000);
+
+
+  test("it should return withdraw status", async () => {
+    const address = "0xecf0f2baef446955c8b0eeb086c2fbec7ab56a04ad5aaca8fa58a26b4e13dd67";
+    const moneyFiAptos = new MoneyFiAptos();
+    const exist = await moneyFiAptos.getWithdrawStatus(address);
+    expect(exist).toEqual({ status: "done" });
+  });
+
+    test("it should return tx withdraw payload", async () => {
+    let existWalletAccount = "0x0ae1e1817aaf1cd020151cd117843988d9c524e202ccb2c726151163c782037f";
+    let depositAmount = 1000;
+
+    const moneyFiAptos = new MoneyFiAptos();
+    const transaction = await moneyFiAptos.getWithdrawTxPayload(APTOS_ADDRESS.USDC, existWalletAccount, BigInt(depositAmount));
+    console.log("transaction");
+    console.log({ transaction });
+    const deserializer = new Deserializer(transaction);
+    const deserializedTransaction = RawTransaction.deserialize(deserializer);
+
+    console.log({ deserializedTransaction })
+  });
 
 });
