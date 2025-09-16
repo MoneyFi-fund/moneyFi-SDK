@@ -1,6 +1,6 @@
 import {AptosFunctionId} from "../types/types"; 
 
-export const MoneyFiBaseApiUrl = "http://localhost:8080"; 
+export const MoneyFiBaseApiUrl = "https://staging-api.moneyfi.fund"; 
 
 export const MONEY_FI_APTOS_FUNCTION_ID: Record<string, AptosFunctionId> = {
   HAS_WALLET_ACCOUNT:
