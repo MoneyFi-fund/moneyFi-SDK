@@ -1,4 +1,3 @@
-
 // SPDX-License-Identifier: Apache-2.0
 import { Aptos, AptosConfig, AccountAddressInput, Network, AccountAddress, MoveValue, AptosApiType } from "@aptos-labs/ts-sdk";
 import { APTOS_ADDRESS } from "../../utils/const"
@@ -69,11 +68,37 @@ export class MoneyFiAptos {
       sender: sender,
       data: {
         function: MONEY_FI_APTOS_FUNCTION_ID.DEPOSIT,
-        functionArguments: [APTOS_ADDRESS.USDC, amount],
+        functionArguments: [tokenAddress, amount],
       },
     });
     return transaction.rawTransaction.bcsToBytes();
   }
+
+  async getWithdrawTxPayload(tokenAddress: AccountAddressInput, sender: AccountAddressInput, amount: bigint): Promise<Uint8Array> {
+
+    if (tokenAddress != APTOS_ADDRESS.USDC && tokenAddress != APTOS_ADDRESS.USDT) {
+      throw new Error(
+        MoneyFiErros.INVALID_SUPPORTED_TOKEN
+      );
+    }
+
+    const isExist = await this.hasWalletAccount(sender);
+    if (!isExist) {
+      throw new Error(MoneyFiErros.UNKNOW_WALLET_ACCOUNT);
+    }
+
+    const transaction = await this.aptosClient.transaction.build.simple({
+      sender: sender,
+      data: {
+        function: MONEY_FI_APTOS_FUNCTION_ID.WITHDRAW,
+        functionArguments: [tokenAddress, amount],
+      },
+    });
+    
+    return transaction.rawTransaction.bcsToBytes();
+  }
+
+
 
   async getUserStatistic(address: AccountAddressInput): Promise<UserStatistic> {
     return await apiGet("sdk/user-statistic", { address: address, client_url: this.aptosConfig.getRequestUrl(AptosApiType.FULLNODE) });

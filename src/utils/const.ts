@@ -7,6 +7,8 @@ export const MONEY_FI_APTOS_FUNCTION_ID: Record<string, AptosFunctionId> = {
     "0x97c9ffc7143c5585090f9ade67d19ac95f3b3e7008ed86c73c947637e2862f56::wallet_account::has_wallet_account",
   DEPOSIT:
     "0x97c9ffc7143c5585090f9ade67d19ac95f3b3e7008ed86c73c947637e2862f56::vault::deposit",
+  WITHDRAW:
+      "0x97c9ffc7143c5585090f9ade67d19ac95f3b3e7008ed86c73c947637e2862f56::vault::withdraw",
 };
 
 export const APTOS_ADDRESS = {
