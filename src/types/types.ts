@@ -1,24 +1,18 @@
 
-import { AccountAddressInput } from "@aptos-labs/ts-sdk";
-
-export type MoneyFiSetting = {
-  readonly customRpcUrl?: string;
+export type ChainSetting = {
+  custom_rpc_url: string;
+  chain_id: number
 };
-
-export type CreateUser = {
-  user_address: { "Aptos": AccountAddressInput };
-  ref_by?: string;
-  is_partnership: boolean;
-}
 
 export type User = {
   id: number;
-  created_at: Date;
+  created_at: string;
   address: string;
   ref_code: string;
-  network: string;
+  ref_by: string | null;
+  network: string; 
   is_partnership: boolean;
-}
+};
 
 export type UserStatistic = {
   total_value: Number;
@@ -43,4 +37,70 @@ export type WithdrawStatusResponse = {
   status: TxnStatus | null;
 }
 
-export type AptosFunctionId = `${string}::${string}::${string}`;
+export type SupportedChains = {
+  evm: string[];
+  aptos: string;
+};
+
+export type TokenInfo = {
+  name: string;
+  chain: string;
+  address: string;
+  token_decimals: string; 
+};
+
+export type SupportedTokens = {
+  tokens: TokenInfo[];
+};
+
+export type CreateUserPayload = {
+  user_address: CrossChainAddress;
+  ref_by?: string | null; 
+  is_partnership: boolean;
+}
+
+export type CrossChainAddress =
+  | { Evm: string }
+  | { Aptos: string };
+
+export type TxInitializationWalletAccountParam = {
+  user_address: CrossChainAddress;
+};
+
+export type HasWalletAccountParam = {
+  sender: string;
+}
+
+export type TxPayloadDepositParam = {
+  sender: string;      
+  chain_id: number;      
+  token_address: string; 
+  amount: bigint;      
+}
+
+export type TxPayloadWithdrawParam = {
+  sender: string;      
+  chain_id: number;
+  token_address: string; 
+  amount: bigint;      
+}
+
+export type GetQouteParam = {
+  sender: string;      
+  chain_id: number;
+  token_address: string; 
+  amount: bigint;      
+}
+
+export type UserStaticsParam = {
+  address: string;
+  chain_id: number;
+}
+
+export type TxPayloadWithdrawResponse = {
+  tx: string;   
+}
+
+export type TxPayloadDepositResponse = {
+  tx: string;   
+}

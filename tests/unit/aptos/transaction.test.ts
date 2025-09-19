@@ -2,74 +2,79 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import {
-  MoneyFiAptos,
+  CHAIN_ID,
+  MoneyFi,
 } from "../../../src";
-import { APTOS_ADDRESS } from "../../../src";
-import { Deserializer, RawTransaction } from "@aptos-labs/ts-sdk";
-import { UserStatistic, WithdrawStatusResponse } from '../../../src/types/types'
-import { json } from "stream/consumers";
+import { ChainSetting, CreateUserPayload, UserStatistic, UserStaticsParam, HasWalletAccountParam, TxPayloadDepositParam, TxPayloadWithdrawParam, ReqWithdrawPayload, WithdrawStatusResponse, SupportedChains, SupportedTokens, TxInitializationWalletAccountParam } from "../../../src/types";
 
 describe("transaction", () => {
-  test("it should return true with exist wallet account", async () => {
-    let existWalletAccount = "0x0ae1e1817aaf1cd020151cd117843988d9c524e202ccb2c726151163c782037f";
+  let moneyFi: MoneyFi;
+  let existWalletAccount: string;
+  let usdcAptos = "0xbae207659db88bea0cbead6da0ed00aac12edcdda169e591cd41c94180b46f3b";
+  let client_url = "https://aptos-mainnet.public.blastapi.io";
 
-    const moneyFiAptos = new MoneyFiAptos();
-    const exist = await moneyFiAptos.hasWalletAccount(existWalletAccount);
-    expect(exist).toBe(true);
+  beforeEach(() => {
+    let chainSetting: ChainSetting[] = [];
+    chainSetting.push({
+      chain_id: -1,
+      custom_rpc_url: client_url
+    });
+
+    moneyFi = new MoneyFi(chainSetting);
+    existWalletAccount = "0x0ae1e1817aaf1cd020151cd117843988d9c524e202ccb2c726151163c782037f";
   });
 
-  test("it should return false with non-exist wallet account", async () => {
-    let nonExistWalletAccount = "0x0ae1e1817aaf1cd020151cd117843988d9c524e202ccb2c726151163c782037f";
-    const moneyFiAptos = new MoneyFiAptos();
-    const exist = await moneyFiAptos.hasWalletAccount(nonExistWalletAccount);
-    expect(exist).toBe(true);
-  });
 
   test("it should return tx deposit payload", async () => {
-    let existWalletAccount = "0x0ae1e1817aaf1cd020151cd117843988d9c524e202ccb2c726151163c782037f";
     let depositAmount = 1000;
-
-    const moneyFiAptos = new MoneyFiAptos();
-    const transaction = await moneyFiAptos.getDepositTxPayload(APTOS_ADDRESS.USDC, existWalletAccount, BigInt(depositAmount));
-    console.log("transaction");
-    console.log({ transaction });
-    const deserializer = new Deserializer(transaction);
-    const deserializedTransaction = RawTransaction.deserialize(deserializer);
-
-    console.log({ deserializedTransaction })
+    let depositParam: TxPayloadDepositParam = {
+      sender: existWalletAccount,
+      chain_id: -1,
+      token_address: usdcAptos,
+      amount: BigInt(depositAmount),
+    }
+    const transaction = await moneyFi.getDepositTxPayload(depositParam);
   });
 
+  test("it should return user account should right", async () => {
+    let newAptosAddress = "0x573c00ac17a17d3caa0eb9079d52085239dcf14de7e5de2c6554583fd82a3f11";
 
-  test("it should return partnership account", async () => {
-    let existWalletAccount = "0x0ae1e1817aaf1cd020151cd117843988d9c524e202ccb2c726151163c782037f";
-
-    const moneyFiAptos = new MoneyFiAptos();
-    let result = await moneyFiAptos.getOrCreatePartnership(existWalletAccount);
-    expect(result.is_partnership).toBe(true);
-    expect(result.address).toBe(existWalletAccount);
-  });
-
-  test("it should return user account", async () => {
-    let existWalletAccount = "0xfc3ce8487b26cbe85e7b0b4f5bc093e3669042632b1b9ee49aa46341f6415e02";
-
-    const moneyFiAptos = new MoneyFiAptos();
-    let result = await moneyFiAptos.getOrCreateUser(existWalletAccount);
-    expect(result.is_partnership).toBe(false);
-    expect(result.address).toBe(existWalletAccount);
+    let newUser: CreateUserPayload = {
+      user_address: { Aptos: newAptosAddress },
+      is_partnership: true,
+    }
+    let res = await moneyFi.createUser(newUser);
+    expect(res.is_partnership).toBe(true);
   });
 
   test("it should return tx initialization account", async () => {
     let existWalletAccount = "0xfa309f53a3d16420dc0114ea131d44818b40419b81b44b0372e6f0a0d78947ba";
-
-    const moneyFiAptos = new MoneyFiAptos();
-    let result = await moneyFiAptos.getTxInitializationWalletAccount(existWalletAccount);
+    let txInitializeWalletAccount: TxInitializationWalletAccountParam = {
+      user_address: { Aptos: existWalletAccount },
+    }
+    let result = await moneyFi.getTxInitializationWalletAccount(txInitializeWalletAccount);
   });
 
-  test("it should return user statistics", async () => {
-    const address = "0x7728386b190c9122cc303b3027b272bc985a8ef43e68b1e0b3b61a102df8e6da";
+  test("it should return tx withdraw payload", async () => {
+    let existWalletAccount = "0x0ae1e1817aaf1cd020151cd117843988d9c524e202ccb2c726151163c782037f";
+    let depositAmount = 1000;
+    let withdrawParam: TxPayloadDepositParam = {
+      sender: existWalletAccount,
+      chain_id: -1,
+      token_address: usdcAptos,
+      amount: BigInt(depositAmount),
+    }
+    const transaction = await moneyFi.getWithdrawTxPayload(withdrawParam);
+  });
 
-    const moneyFiAptos = new MoneyFiAptos();
-    const exist = await moneyFiAptos.getUserStatistic(address);
+
+  test("it should return user statistics", async () => {
+    const address = "0x31349f2d7d9aa2250a7becf4be83a46f2c5789e41dafcf7906ba10f28f2c30bf";
+    let userStaticsParam: UserStaticsParam = {
+      address: address,
+      chain_id: CHAIN_ID.APTOS
+    }
+    const exist = await moneyFi.getUserStatistic(userStaticsParam);
     expect(exist).toBeDefined();
     expect(exist).toMatchObject<UserStatistic>({
       total_value: expect.any(Number),
@@ -81,28 +86,44 @@ describe("transaction", () => {
       total_monetized_balance: expect.any(Number),
       total_withdrawn_liquidity: expect.any(Number),
     });
-  }, 20000);
+  }, 100000);
 
+  test("it should return true with exist wallet account", async () => {
+    let existWalletAccount = "0x0ae1e1817aaf1cd020151cd117843988d9c524e202ccb2c726151163c782037f";
+    let param: HasWalletAccountParam = {
+      sender: existWalletAccount
+    }
+    const exist = await moneyFi.hasWalletAccount(param);
+    expect(exist).toBe(true);
+  });
+
+  test("it should return false with non-exist wallet account", async () => {
+    let nonExistWalletAccount = "0x0ae1e1817aaf1cd020151cd117843988d9c594e202ccb2c726151163c782037f";
+    let param: HasWalletAccountParam = {
+      sender: nonExistWalletAccount
+    }
+    const exist = await moneyFi.hasWalletAccount(param);
+    expect(exist).toBe(false);
+  });
 
   test("it should return withdraw status", async () => {
     const address = "0xecf0f2baef446955c8b0eeb086c2fbec7ab56a04ad5aaca8fa58a26b4e13dd67";
-    const moneyFiAptos = new MoneyFiAptos();
-    const exist = await moneyFiAptos.getWithdrawStatus(address);
+    const exist = await moneyFi.getWithdrawStatus(address);
     expect(exist).toEqual({ status: "done" });
   });
 
-    test("it should return tx withdraw payload", async () => {
-    let existWalletAccount = "0x0ae1e1817aaf1cd020151cd117843988d9c524e202ccb2c726151163c782037f";
-    let depositAmount = 1000;
-
-    const moneyFiAptos = new MoneyFiAptos();
-    const transaction = await moneyFiAptos.getWithdrawTxPayload(APTOS_ADDRESS.USDC, existWalletAccount, BigInt(depositAmount));
-    console.log("transaction");
-    console.log({ transaction });
-    const deserializer = new Deserializer(transaction);
-    const deserializedTransaction = RawTransaction.deserialize(deserializer);
-
-    console.log({ deserializedTransaction })
+  test("it should return list of supported chains", async () => {
+    const exist = await moneyFi.getSupportedChains();
   });
 
-});
+  test("it should return list of supported tokens", async () => {
+    const exist = await moneyFi.getSupportedTokens();
+  });
+  test("it should return user infor", async () => {
+    let existWalletAccount = "0xd5f05f40fcc6614e659a380c84eef1b34e735f7241ad31b5305d5a6996d803bf";
+
+    const exist = await moneyFi.getUserInfor(existWalletAccount);
+    expect(exist.address).toBe(existWalletAccount);
+  });
+
+}); 

@@ -1,119 +1,191 @@
 // SPDX-License-Identifier: Apache-2.0
-import { Aptos, AptosConfig, AccountAddressInput, Network, AccountAddress, MoveValue, AptosApiType } from "@aptos-labs/ts-sdk";
-import { APTOS_ADDRESS } from "../../utils/const"
-import { MONEY_FI_APTOS_FUNCTION_ID } from "../../utils/const";
+import { ChainSetting, CreateUserPayload, User, UserStatistic, GetQouteParam, UserStaticsParam, HasWalletAccountParam, TxPayloadDepositParam, TxPayloadWithdrawParam, ReqWithdrawPayload, WithdrawStatusResponse, SupportedChains, SupportedTokens, TxInitializationWalletAccountParam, TxPayloadWithdrawResponse, TxPayloadDepositResponse } from "../../types/types";
 import { MoneyFiErros } from "../../errors/index";
-import { MoneyFiSetting, CreateUser, User, UserStatistic, ReqWithdrawPayload,WithdrawStatusResponse } from "../../types/types";
 import { apiPost, apiGet } from "../../utils/helpers";
+import { CHAIN_ID } from "../../utils/const";
 
-export class MoneyFiAptos {
-  readonly aptosClient: Aptos;
-  readonly aptosConfig: AptosConfig;
+/**
+ * MoneyFi SDK entry for transaction-related operations.
+ *
+ * Responsibilities:
+ * - Hold chain RPC settings provided at construction time.
+ * - Provide convenient methods that call backend SDK endpoints via apiGet/apiPost.
+ *
+ * Usage (frontend):
+ * 1. Instantiate with an array of ChainSetting objects:
+ *      const sdk = new MoneyFi([{ chain_id: <chain_id>, custom_rpc_url: "https://..." }]);
+ *
+ * 2. Use provided methods to request transaction payloads from backend:
+ *    - createUser(payload)                 -> create user record
+ *    - getTxInitializationWalletAccount()  -> initialize wallet account tx (Aptos-specific RPC added)
+ *    - hasWalletAccount(params)            -> check if wallet account exists
+ *    - getDepositTxPayload(params)         -> obtain deposit tx payload to sign and submit
+ *    - getWithdrawTxPayload(params)        -> obtain withdraw tx payload to sign and submit
+ *    - getUserStatistic(params)            -> fetch user statistics
+ *    - reqWithdraw(address, payload)       -> request off-chain withdraw processing
+ *    - getWithdrawStatus(address)          -> check withdraw processing status
+ *    - getSupportedChains()/getSupportedTokens() -> enumerate supported networks/tokens
+ *    - getUserInfor(address)               -> fetch user information
+ *    - getQoute(params)                    -> get quote/pricing info (uses chain RPC)
+ *
+ * Notes:
+ * - Methods call apiGet/apiPost and may throw on network/HTTP errors; wrap calls in try/catch.
+ * - For tx payload methods the returned object typically contains a tx payload that must be
+ *   passed to a wallet for signing/submission. The SDK attaches chain RPC via getUrlRpcByChainId.
+ */
+export class MoneyFi {
+  readonly money_fi_setting: ChainSetting[];
 
-  constructor(setting?: MoneyFiSetting) {
-
-    // Init Aptos config 
-    if (setting?.customRpcUrl) {
-      this.aptosConfig = new AptosConfig({ network: Network.MAINNET, fullnode: setting.customRpcUrl });
-      this.aptosClient = new Aptos(this.aptosConfig);
-    } else {
-      this.aptosConfig = new AptosConfig({ network: Network.MAINNET });
-      this.aptosClient = new Aptos(this.aptosConfig);
-    }
-  }
-
-  async getOrCreatePartnership(address: AccountAddressInput): Promise<User> {
-    return await apiPost("sdk/create-user", { user_address: { Aptos: address }, is_partnership: true });
-  }
-
-  async getOrCreateUser(address: AccountAddressInput, refBy?: string): Promise<User> {
-    let body: CreateUser = { user_address: { Aptos: address }, is_partnership: false };
-    if (refBy) {
-      body.ref_by = refBy;
-    }
-
-    return await apiPost("sdk/create-user", body);
-  }
-
-  async getTxInitializationWalletAccount(address: AccountAddressInput): Promise<string> {
-    return await apiPost<string>("sdk/create-wallet-account", { user_address: { Aptos: address }, client_url: this.aptosConfig.getRequestUrl(AptosApiType.FULLNODE) });
-  }
-
-  async hasWalletAccount(address: AccountAddressInput): Promise<MoveValue> {
-    const addressToVectorU8 = AccountAddress.from(address).toUint8Array();
-
-    let isExist = await this.aptosClient.view({
-      payload: {
-        function: MONEY_FI_APTOS_FUNCTION_ID.HAS_WALLET_ACCOUNT,
-        functionArguments: [addressToVectorU8]
-      }
-    })
-
-    return isExist[0];
-  }
-
-  async getDepositTxPayload(tokenAddress: AccountAddressInput, sender: AccountAddressInput, amount: bigint): Promise<Uint8Array> {
-
-    if (tokenAddress != APTOS_ADDRESS.USDC && tokenAddress != APTOS_ADDRESS.USDT) {
-      throw new Error(
-        MoneyFiErros.INVALID_SUPPORTED_TOKEN
-      );
+  /**
+   * Create MoneyFi SDK instance.
+   * @param config - array of ChainSetting; must contain at least one entry.
+   *                 Each entry should include chain_id and custom_rpc_url.
+   * @throws Error when config is empty.
+   */
+  constructor(config: ChainSetting[]) {
+    if (!config.length) {
+      throw new Error(MoneyFiErros.INVALID_CHAIN_SETTING);
     }
 
-    const isExist = await this.hasWalletAccount(sender);
-    if (!isExist) {
-      throw new Error(MoneyFiErros.UNKNOW_WALLET_ACCOUNT);
-    }
-    const transaction = await this.aptosClient.transaction.build.simple({
-      sender: sender,
-      data: {
-        function: MONEY_FI_APTOS_FUNCTION_ID.DEPOSIT,
-        functionArguments: [tokenAddress, amount],
-      },
-    });
-    return transaction.rawTransaction.bcsToBytes();
+    this.money_fi_setting = config.map(item => ({
+      custom_rpc_url: item.custom_rpc_url,
+      chain_id: item.chain_id,
+    }));
   }
 
-  async getWithdrawTxPayload(tokenAddress: AccountAddressInput, sender: AccountAddressInput, amount: bigint): Promise<Uint8Array> {
-
-    if (tokenAddress != APTOS_ADDRESS.USDC && tokenAddress != APTOS_ADDRESS.USDT) {
-      throw new Error(
-        MoneyFiErros.INVALID_SUPPORTED_TOKEN
-      );
-    }
-
-    const isExist = await this.hasWalletAccount(sender);
-    if (!isExist) {
-      throw new Error(MoneyFiErros.UNKNOW_WALLET_ACCOUNT);
-    }
-
-    const transaction = await this.aptosClient.transaction.build.simple({
-      sender: sender,
-      data: {
-        function: MONEY_FI_APTOS_FUNCTION_ID.WITHDRAW,
-        functionArguments: [tokenAddress, amount],
-      },
-    });
-    
-    return transaction.rawTransaction.bcsToBytes();
+  /**
+   * Create or register a user in MoneyFi backend.
+   * @param payload CreateUserPayload object (see types).
+   * @returns Promise<User>
+   */
+  async createUser(payload: CreateUserPayload): Promise<User> {
+    return await apiPost("v1/sdk/create-user", payload);
   }
 
-
-
-  async getUserStatistic(address: AccountAddressInput): Promise<UserStatistic> {
-    return await apiGet("sdk/user-statistic", { address: address, client_url: this.aptosConfig.getRequestUrl(AptosApiType.FULLNODE) });
+  /**
+ * Request initialization transaction for creating a wallet account (Aptos).
+ * The SDK adds the Aptos RPC URL from the configured chain settings.
+ * @param params TxInitializationWalletAccountParam
+ * @returns signed tx (string) prepared by backend
+ */
+  async getTxInitializationWalletAccount(params: TxInitializationWalletAccountParam): Promise<string> {
+    let rpc = this.getUrlRpcByChainId(CHAIN_ID.APTOS);
+    return await apiPost<string>("v1/sdk/create-wallet-account", { ...params, client_url: rpc });
   }
 
+  /**
+   * Check whether a wallet account exists for provided parameters.
+   * @param params HasWalletAccountParam
+   * @returns boolean
+   */
+  async hasWalletAccount(params: HasWalletAccountParam): Promise<boolean> {
+    let rpc = this.getUrlRpcByChainId(CHAIN_ID.APTOS);
+    return await apiGet<boolean>("v1/sdk/has-wallet-account", { ...params, client_url: rpc });
+  }
+
+  /**
+   * Request deposit transaction payload from backend.
+   * The returned TxPayloadDepositResponse typically includes a payload to sign.
+   * @param params TxPayloadDepositParam
+   * @returns TxPayloadDepositResponse
+   */
+  async getDepositTxPayload(params: TxPayloadDepositParam): Promise<TxPayloadDepositResponse> {
+    let rpc = this.getUrlRpcByChainId(params.chain_id);
+    return await apiGet<TxPayloadDepositResponse>("v1/sdk/tx-payload-deposit", { ...params, client_url: rpc });
+  }
+
+  /**
+   * Request withdraw transaction payload from backend.
+   * @param params TxPayloadWithdrawParam
+   * @returns TxPayloadWithdrawResponse
+   */
+  async getWithdrawTxPayload(params: TxPayloadWithdrawParam): Promise<TxPayloadWithdrawResponse> {
+    let rpc = this.getUrlRpcByChainId(params.chain_id);
+    return await apiGet<TxPayloadWithdrawResponse>("v1/sdk/tx-payload-withdraw", { ...params, client_url: rpc });
+  }
+
+  /**
+   * Fetch user statistics for a given chain.
+   * @param params UserStaticsParam
+   * @returns UserStatistic
+   */
+  async getUserStatistic(params: UserStaticsParam): Promise<UserStatistic> {
+    let rpc = this.getUrlRpcByChainId(params.chain_id);
+    return await apiGet<UserStatistic>("v1/sdk/user-statistic", { ...params, client_url: rpc });
+  }
+
+  /**
+   * Request an off-chain withdraw action.
+   * @param address string - user address used as query param
+   * @param payload ReqWithdrawPayload - withdrawal details
+   */
   async reqWithdraw(
-    address: AccountAddressInput,
+    address: string,
     payload: ReqWithdrawPayload
   ): Promise<void> {
-    return await apiPost(`sdk/req-withdraw?address=${address}`, payload);
+    return await apiPost(`v1/sdk/req-withdraw?address=${address}`, payload);
   }
 
-
-  async getWithdrawStatus(address: AccountAddressInput) : Promise<WithdrawStatusResponse>{
-    return await apiGet(`sdk/req-withdraw-status?address=${address}`);
+  /**
+    * Get withdraw processing status for an address.
+    * @param address string
+    * @returns WithdrawStatusResponse
+    */
+  async getWithdrawStatus(address: string): Promise<WithdrawStatusResponse> {
+    return await apiGet<WithdrawStatusResponse>(`v1/sdk/req-withdraw-status?address=${address}`);
   }
 
+  /**
+   * List supported chains from backend.
+   * @returns SupportedChains
+   */
+  async getSupportedChains(): Promise<SupportedChains> {
+    return await apiGet<SupportedChains>(`v1/sdk/get-suported-chains`);
+  }
+
+  /**
+ * List supported tokens from backend.
+ * @returns SupportedTokens
+ */
+  async getSupportedTokens(): Promise<SupportedTokens> {
+    return await apiGet<SupportedTokens>(`v1/sdk/get-suported-tokens`);
+  }
+
+  /**
+ * Fetch user information by address.
+ * @param address string
+ * @returns User
+ */
+  async getUserInfor(address: string): Promise<User> {
+    return await apiGet<User>(`v1/sdk/get-user-infomation?sender=${address}`);
+  }
+
+  /**
+ * Get quote/pricing info for a given request.
+ * Adds the configured RPC URL for the provided chain_id.
+ * @param params GetQouteParam
+ * @returns User (quote info)
+ */
+  async getQoute(params: GetQouteParam): Promise<User> {
+    let rpc = this.getUrlRpcByChainId(params.chain_id);
+    return await apiGet<User>(`v1/sdk/get-qoute`, { ...params, client_url: rpc });
+  }
+
+  /**
+ * Resolve RPC URL configured for a chain_id.
+ * @param chainId number
+ * @throws Error when no matching chain settings are found.
+ * @returns custom RPC URL string
+ */
+  getUrlRpcByChainId(
+    chainId: number
+  ): string {
+    const setting = this.money_fi_setting.find((s) => s.chain_id === chainId);
+
+    if (!setting) {
+      throw new Error(`RPC URL not found for chainId ${chainId}`);
+    }
+
+    return setting.custom_rpc_url;
+  }
 }
