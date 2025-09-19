@@ -241,6 +241,10 @@ Resolves the configured RPC URL for a specific chain.
 ---
 
 ## Frontend Integration Flow
+### User Management
+1. Use `createUser(payload)` to register new users if not exist
+2. Call `hasWalletAccount(params)` to check wallet account exist in Aptos
+3. Use `getTxInitializationWalletAccount(params)` if wallet account setup is needed in Aptos and then submit the signed transaction to the blockchain
 
 ### Deposit Flow
 1. Call `getDepositTxPayload(params)` with deposit details
@@ -253,10 +257,10 @@ Resolves the configured RPC URL for a specific chain.
 2. Use `getWithdrawStatus(address)` to monitor withdrawal progress
 3. Call `getWithdrawTxPayload(params)` for on-chain withdrawal
 
-### User Management
-1. Use `createUser(payload)` to register new users if not exist
-2. Call `hasWalletAccount(params)` to check wallet account exist in Aptos
-3. Use `getTxInitializationWalletAccount(params)` if wallet account setup is needed in Aptos and then submit the signed transaction to the blockchain
+### User Information
+1. Call `getUserStatistic(params)` to retrieve a user’s investment analytics.
+2. Use `getUserInfor(address)` to retrieve a user’s general information.
+
 
 ### Example: https://github.com/MoneyFi-fund/moneyfi-SDK-example
 
