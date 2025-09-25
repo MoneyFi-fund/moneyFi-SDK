@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-import { ChainSetting, CreateUserPayload, User, UserStatistic, GetQouteParam, UserStaticsParam, HasWalletAccountParam, TxPayloadDepositParam, TxPayloadWithdrawParam, ReqWithdrawPayload, WithdrawStatusResponse, SupportedChains, SupportedTokens, TxInitializationWalletAccountParam, TxPayloadWithdrawResponse, TxPayloadDepositResponse } from "../../types/types";
+import { ChainSetting, CreateUserPayload, User, UserStatistic, GetQouteParam, UserStaticsParam, HasWalletAccountParam, TxPayloadDepositParam, TxPayloadWithdrawParam, ReqWithdrawPayload, WithdrawStatusResponse, SupportedChains, SupportedTokens, TxInitializationWalletAccountParam, TxPayloadWithdrawResponse, TxPayloadDepositResponse, TxPayloadReferralRewardWithdrawParam } from "../../types/types";
 import { MoneyFiErros } from "../../errors/index";
 import { apiPost, apiGet } from "../../utils/helpers";
 import { CHAIN_ID } from "../../utils/const";
@@ -35,6 +35,7 @@ import { CHAIN_ID } from "../../utils/const";
  */
 export class MoneyFi {
   readonly money_fi_setting: ChainSetting[];
+  readonly intergration_code: string; 
 
   /**
    * Create MoneyFi SDK instance.
@@ -42,8 +43,8 @@ export class MoneyFi {
    *                 Each entry should include chain_id and custom_rpc_url.
    * @throws Error when config is empty.
    */
-  constructor(config: ChainSetting[]) {
-    if (!config.length) {
+  constructor(config: ChainSetting[], integration_code: string) {
+    if (!config.length || !integration_code.length) {
       throw new Error(MoneyFiErros.INVALID_CHAIN_SETTING);
     }
 
@@ -51,6 +52,8 @@ export class MoneyFi {
       custom_rpc_url: item.custom_rpc_url,
       chain_id: item.chain_id,
     }));
+
+    this.intergration_code = integration_code; 
   }
 
   /**
@@ -59,7 +62,7 @@ export class MoneyFi {
    * @returns Promise<User>
    */
   async createUser(payload: CreateUserPayload): Promise<User> {
-    return await apiPost("v1/sdk/create-user", payload);
+    return await apiPost("v1/sdk/create-user", {...payload, ref_by: this.intergration_code}, this.intergration_code);
   }
 
   /**
@@ -70,7 +73,7 @@ export class MoneyFi {
  */
   async getTxInitializationWalletAccount(params: TxInitializationWalletAccountParam): Promise<string> {
     let rpc = this.getUrlRpcByChainId(CHAIN_ID.APTOS);
-    return await apiPost<string>("v1/sdk/create-wallet-account", { ...params, client_url: rpc });
+    return await apiPost<string>("v1/sdk/create-wallet-account", { ...params, client_url: rpc }, this.intergration_code);
   }
 
   /**
@@ -80,7 +83,7 @@ export class MoneyFi {
    */
   async hasWalletAccount(params: HasWalletAccountParam): Promise<boolean> {
     let rpc = this.getUrlRpcByChainId(CHAIN_ID.APTOS);
-    return await apiGet<boolean>("v1/sdk/has-wallet-account", { ...params, client_url: rpc });
+    return await apiGet<boolean>("v1/sdk/has-wallet-account", { ...params, client_url: rpc }, this.intergration_code);
   }
 
   /**
@@ -91,7 +94,7 @@ export class MoneyFi {
    */
   async getDepositTxPayload(params: TxPayloadDepositParam): Promise<TxPayloadDepositResponse> {
     let rpc = this.getUrlRpcByChainId(params.chain_id);
-    return await apiGet<TxPayloadDepositResponse>("v1/sdk/tx-payload-deposit", { ...params, client_url: rpc });
+    return await apiGet<TxPayloadDepositResponse>("v1/sdk/tx-payload-deposit", { ...params, client_url: rpc }, this.intergration_code);
   }
 
   /**
@@ -101,7 +104,17 @@ export class MoneyFi {
    */
   async getWithdrawTxPayload(params: TxPayloadWithdrawParam): Promise<TxPayloadWithdrawResponse> {
     let rpc = this.getUrlRpcByChainId(params.chain_id);
-    return await apiGet<TxPayloadWithdrawResponse>("v1/sdk/tx-payload-withdraw", { ...params, client_url: rpc });
+    return await apiGet<TxPayloadWithdrawResponse>("v1/sdk/tx-payload-withdraw", { ...params, client_url: rpc }, this.intergration_code);
+  }
+
+  /**
+   * Request withdraw transaction payload from backend.
+   * @param params TxPayloadWithdrawParam
+   * @returns TxPayloadWithdrawResponses
+   */
+  async getWithdrawReferralRewardTxPayload(params: TxPayloadReferralRewardWithdrawParam): Promise<TxPayloadWithdrawResponse> {
+    let rpc = this.getUrlRpcByChainId(params.chain_id);
+    return await apiGet<TxPayloadWithdrawResponse>("v1/sdk/tx-payload-referral-reward-withdraw-", { ...params, client_url: rpc }, this.intergration_code);
   }
 
   /**
@@ -111,7 +124,7 @@ export class MoneyFi {
    */
   async getUserStatistic(params: UserStaticsParam): Promise<UserStatistic> {
     let rpc = this.getUrlRpcByChainId(params.chain_id);
-    return await apiGet<UserStatistic>("v1/sdk/user-statistic", { ...params, client_url: rpc });
+    return await apiGet<UserStatistic>("v1/sdk/user-statistic", { ...params, client_url: rpc }, this.intergration_code);
   }
 
   /**
@@ -123,7 +136,7 @@ export class MoneyFi {
     address: string,
     payload: ReqWithdrawPayload
   ): Promise<void> {
-    return await apiPost(`v1/sdk/req-withdraw?address=${address}`, payload);
+    return await apiPost(`v1/sdk/req-withdraw?address=${address}`, payload, this.intergration_code);
   }
 
   /**
@@ -132,7 +145,7 @@ export class MoneyFi {
     * @returns WithdrawStatusResponse
     */
   async getWithdrawStatus(address: string): Promise<WithdrawStatusResponse> {
-    return await apiGet<WithdrawStatusResponse>(`v1/sdk/req-withdraw-status?address=${address}`);
+    return await apiGet<WithdrawStatusResponse>(`v1/sdk/req-withdraw-status?address=${address}`, {},  this.intergration_code);
   }
 
   /**
@@ -140,7 +153,7 @@ export class MoneyFi {
    * @returns SupportedChains
    */
   async getSupportedChains(): Promise<SupportedChains> {
-    return await apiGet<SupportedChains>(`v1/sdk/get-suported-chains`);
+    return await apiGet<SupportedChains>(`v1/sdk/get-suported-chains`, {},  this.intergration_code);
   }
 
   /**
@@ -148,7 +161,7 @@ export class MoneyFi {
  * @returns SupportedTokens
  */
   async getSupportedTokens(): Promise<SupportedTokens> {
-    return await apiGet<SupportedTokens>(`v1/sdk/get-suported-tokens`);
+    return await apiGet<SupportedTokens>(`v1/sdk/get-suported-tokens`, {},  this.intergration_code);
   }
 
   /**
@@ -157,7 +170,7 @@ export class MoneyFi {
  * @returns User
  */
   async getUserInfor(address: string): Promise<User> {
-    return await apiGet<User>(`v1/sdk/get-user-infomation?sender=${address}`);
+    return await apiGet<User>(`v1/sdk/get-user-infomation?sender=${address}`, {},  this.intergration_code);
   }
 
   /**
@@ -168,7 +181,7 @@ export class MoneyFi {
  */
   async getQoute(params: GetQouteParam): Promise<User> {
     let rpc = this.getUrlRpcByChainId(params.chain_id);
-    return await apiGet<User>(`v1/sdk/get-qoute`, { ...params, client_url: rpc });
+    return await apiGet<User>(`v1/sdk/get-qoute`, { ...params, client_url: rpc },  this.intergration_code);
   }
 
   /**
@@ -183,7 +196,7 @@ export class MoneyFi {
     const setting = this.money_fi_setting.find((s) => s.chain_id === chainId);
 
     if (!setting) {
-      throw new Error(`RPC URL not found for chainId ${chainId}`);
+      throw new Error(`${MoneyFiErros.NOT_FOUND_RPC} - chainId ${chainId}`);
     }
 
     return setting.custom_rpc_url;

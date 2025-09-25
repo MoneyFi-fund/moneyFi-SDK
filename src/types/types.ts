@@ -23,6 +23,7 @@ export type UserStatistic = {
   pending_yield_earnings: Number;
   total_withdrawn_liquidity: Number;
   apr_avg: Number;
+  referral_reward: Number; 
 }
 
 export type ReqWithdrawPayload = {
@@ -55,8 +56,6 @@ export type SupportedTokens = {
 
 export type CreateUserPayload = {
   user_address: CrossChainAddress;
-  ref_by?: string | null; 
-  is_partnership: boolean;
 }
 
 export type CrossChainAddress =
@@ -79,6 +78,13 @@ export type TxPayloadDepositParam = {
 }
 
 export type TxPayloadWithdrawParam = {
+  sender: string;      
+  chain_id: number;
+  token_address: string; 
+  amount: bigint;      
+}
+
+export type TxPayloadReferralRewardWithdrawParam = {
   sender: string;      
   chain_id: number;
   token_address: string; 

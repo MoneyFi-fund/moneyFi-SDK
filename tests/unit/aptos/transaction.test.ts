@@ -12,7 +12,7 @@ describe("transaction", () => {
   let existWalletAccount: string;
   let usdcAptos = "0xbae207659db88bea0cbead6da0ed00aac12edcdda169e591cd41c94180b46f3b";
   let client_url = "https://aptos-mainnet.public.blastapi.io";
-
+  let partner_ship_code = "egaNo5SuWLb0";
   beforeEach(() => {
     let chainSetting: ChainSetting[] = [];
     chainSetting.push({
@@ -20,7 +20,7 @@ describe("transaction", () => {
       custom_rpc_url: client_url
     });
 
-    moneyFi = new MoneyFi(chainSetting);
+    moneyFi = new MoneyFi(chainSetting, partner_ship_code);
     existWalletAccount = "0x0ae1e1817aaf1cd020151cd117843988d9c524e202ccb2c726151163c782037f";
   });
 
@@ -37,11 +37,10 @@ describe("transaction", () => {
   });
 
   test("it should return user account should right", async () => {
-    let newAptosAddress = "0x573c00ac17a17d3caa0eb9079d52085239dcf14de7e5de2c6554583fd82a3f11";
+    let newAptosAddress = "0x473c00ac17a17d3caa08b9079d52085239dcf14de7e5de2c6554583fd82a3f28";
 
     let newUser: CreateUserPayload = {
       user_address: { Aptos: newAptosAddress },
-      is_partnership: true,
     }
     let res = await moneyFi.createUser(newUser);
     expect(res.is_partnership).toBe(true);
@@ -85,6 +84,7 @@ describe("transaction", () => {
       total_deposited_liquidity: expect.any(Number),
       total_monetized_balance: expect.any(Number),
       total_withdrawn_liquidity: expect.any(Number),
+      referral_reward: expect.any(Number),
     });
   }, 100000);
 
@@ -119,8 +119,9 @@ describe("transaction", () => {
   test("it should return list of supported tokens", async () => {
     const exist = await moneyFi.getSupportedTokens();
   });
+
   test("it should return user infor", async () => {
-    let existWalletAccount = "0xd5f05f40fcc6614e659a380c84eef1b34e735f7241ad31b5305d5a6996d803bf";
+    let existWalletAccount = "0x473c00ac17a17d3caa08b9079d52085239dcf14de7e5de2c6554583fd82a3f28";
 
     const exist = await moneyFi.getUserInfor(existWalletAccount);
     expect(exist.address).toBe(existWalletAccount);
