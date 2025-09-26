@@ -1,8 +1,14 @@
 
 export type ChainSetting = {
-  custom_rpc_url: string;
+  client_url: string;
   chain_id: number
 };
+
+export type MoneyFiConfig = {
+  chains: ChainSetting[];
+  integration_code: string;
+  api_key: string; 
+}
 
 export type User = {
   id: number;
@@ -27,9 +33,11 @@ export type UserStatistic = {
 }
 
 export type ReqWithdrawPayload = {
-  signature: String,
-  pubkey: String,
-  message: String
+  signature: string,
+  pubkey: string,
+  message: string, 
+  to_chain_id: number; 
+  from_chain_id: number[];
 }
 
 export type TxnStatus = "done" | "failed" | "pending";
@@ -91,16 +99,14 @@ export type TxPayloadReferralRewardWithdrawParam = {
   amount: bigint;      
 }
 
-export type GetQouteParam = {
+export type GetQuoteParam = {
   sender: string;      
-  chain_id: number;
-  token_address: string; 
-  amount: bigint;      
+  to_chain_ids: number[];
 }
 
 export type UserStaticsParam = {
   address: string;
-  chain_id: number;
+  chain_ids: number[];
 }
 
 export type TxPayloadWithdrawResponse = {
@@ -109,4 +115,17 @@ export type TxPayloadWithdrawResponse = {
 
 export type TxPayloadDepositResponse = {
   tx: string;   
+}
+
+export type TxPayloadReferralRewardWithdrawResponse = {
+  tx: string;   
+}
+
+
+export type GetQuoteResponse = {
+  list_quote: {
+    chain_id: number; 
+    token_address: string; 
+    amount: number;
+  }
 }

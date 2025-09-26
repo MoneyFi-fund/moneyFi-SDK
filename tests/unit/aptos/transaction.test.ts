@@ -5,22 +5,31 @@ import {
   CHAIN_ID,
   MoneyFi,
 } from "../../../src";
-import { ChainSetting, CreateUserPayload, UserStatistic, UserStaticsParam, HasWalletAccountParam, TxPayloadDepositParam, TxPayloadWithdrawParam, ReqWithdrawPayload, WithdrawStatusResponse, SupportedChains, SupportedTokens, TxInitializationWalletAccountParam } from "../../../src/types";
+import { ChainSetting, CreateUserPayload, UserStatistic, UserStaticsParam, HasWalletAccountParam, TxPayloadDepositParam, TxPayloadWithdrawParam, ReqWithdrawPayload, WithdrawStatusResponse, SupportedChains, SupportedTokens, TxInitializationWalletAccountParam, MoneyFiConfig } from "../../../src/types";
 
 describe("transaction", () => {
   let moneyFi: MoneyFi;
   let existWalletAccount: string;
   let usdcAptos = "0xbae207659db88bea0cbead6da0ed00aac12edcdda169e591cd41c94180b46f3b";
   let client_url = "https://aptos-mainnet.public.blastapi.io";
-  let partner_ship_code = "egaNo5SuWLb0";
+  let integration_code = "egaNo5SuWLb0";
+  let api_key = "egaNo5SuWLb0";
   beforeEach(() => {
+    let moneyFiConfig: MoneyFiConfig = {
+      chains: [{
+        chain_id: -1,
+        client_url: client_url
+      }],
+      integration_code,
+      api_key
+    }
     let chainSetting: ChainSetting[] = [];
     chainSetting.push({
       chain_id: -1,
-      custom_rpc_url: client_url
+      client_url: client_url
     });
 
-    moneyFi = new MoneyFi(chainSetting, partner_ship_code);
+    moneyFi = new MoneyFi(moneyFiConfig);
     existWalletAccount = "0x0ae1e1817aaf1cd020151cd117843988d9c524e202ccb2c726151163c782037f";
   });
 
@@ -123,7 +132,7 @@ describe("transaction", () => {
   test("it should return user infor", async () => {
     let existWalletAccount = "0x473c00ac17a17d3caa08b9079d52085239dcf14de7e5de2c6554583fd82a3f28";
 
-    const exist = await moneyFi.getUserInfor(existWalletAccount);
+    const exist = await moneyFi.getUserInformation(existWalletAccount);
     expect(exist.address).toBe(existWalletAccount);
   });
 
