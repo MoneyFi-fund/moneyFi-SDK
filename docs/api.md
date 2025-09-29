@@ -8,7 +8,7 @@ This document provides an overview of all API endpoints called within the **Mone
 - **Base Path:** `v1/sdk/`
 - **Transport:** HTTPS (POST/GET depending on method)
 - **Authentication:** `integration_code` passed internally by SDK
-
+- **Headers:** All requests must include the required headers (see [Header Requirements](#-header-requirements))
 ---
 
 ## 📋 API Endpoints
@@ -131,7 +131,7 @@ type UserStatistic = {
   pending_yield_earnings: Number;
   total_withdrawn_liquidity: Number;
   apr_avg: Number;
-  referral_reward: Number;
+  referral_balance: Number;
 }
 ```
 

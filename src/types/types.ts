@@ -18,7 +18,7 @@ export type UserStatistic = {
   pending_yield_earnings: Number;
   total_withdrawn_liquidity: Number;
   apr_avg: Number;
-  referral_reward: Number;
+  referral_balance: Number;
 }
 
 export type ReqWithdrawPayload = {
@@ -55,7 +55,7 @@ export type CreateUserPayload = {
 
 export type CrossChainAddress =
   | { Evm: string }
-  | { altos: string };
+  | { Aptos: string };
 
 export type TxInitializationWalletAccountParam = {
   user_address: CrossChainAddress;

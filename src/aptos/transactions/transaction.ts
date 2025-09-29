@@ -145,6 +145,6 @@ export class MoneyFi {
     * @returns Promise resolving to a {@link GetMaxQuoteResponse}.
     */
   async getMaxQuotesAmount(params: GetMaxQuoteParam): Promise<GetMaxQuotesResponse> {
-    return await apiGet<GetMaxQuotesResponse>(`v1/sdk/get-max-quote-amount`, params, this.integration_code);
+    return await apiGet<GetMaxQuotesResponse>(`v1/sdk/get-max-quotes-amount`, params, this.integration_code);
   }
 }

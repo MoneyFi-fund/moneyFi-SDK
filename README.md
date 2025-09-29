@@ -250,5 +250,5 @@ Gets pricing and quote information for trading operations.
 ### Example: https://github.com/MoneyFi-fund/moneyfi-SDK-example
 
 ## Documentation
-- [API Reference](https://github.com/your-org/your-sdk/blob/main/docs/api.md)
-- [Examples] (https://github.com/MoneyFi-fund/moneyfi-SDK-example)
+- [API Reference](https://github.com/MoneyFi-fund/moneyFi-SDK/blob/feat/referral-fee/docs/api.md)
+- [Examples](https://github.com/MoneyFi-fund/moneyfi-SDK-example)

@@ -1,6 +1,6 @@
 import { MoneyFiBaseApiUrl } from "../index";
-import {VERSION} from "../version"; 
-import {SDK_TYPE} from "./const"; 
+import { VERSION } from "../version";
+import { SDK_TYPE } from "./const";
 import { API_DEFAULT_TIMEOUT } from "../index";
 
 async function fetchWithTimeout<T>(
@@ -11,10 +11,11 @@ async function fetchWithTimeout<T>(
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), timeout);
   try {
+    console.log(url); 
     const res = await fetch(url, { ...options, signal: controller.signal });
     clearTimeout(timer);
 
-    console.log({res})
+    console.log({ res })
     if (!res.ok) {
       const errorData = await res.json().catch(() => res.statusText);
       throw new Error(typeof errorData === "string" ? errorData : JSON.stringify(errorData));
@@ -22,14 +23,15 @@ async function fetchWithTimeout<T>(
 
     return (await res.json()) as T;
   } catch (err: any) {
-    console.log({err})
+    console.log({ err })
     if (err.name === "AbortError") {
       throw new Error("Request timed out");
     }
     throw err;
   }
 }
-  function buildHeaders(clientCode?: string): HeadersInit {
+
+function buildHeaders(clientCode?: string): HeadersInit {
   return {
     "Content-Type": "application/json",
     "X-SDK": SDK_TYPE,                // e.g. "ts-sdk"
@@ -58,6 +60,9 @@ export async function apiPost<T>(
   clientCode?: string
 ): Promise<T> {
   // const url = `${MoneyFiBaseApiUrl}/${endpoint}`;
+
+  console.log(buildHeaders(clientCode)); 
+  
   const url = buildUrl(endpoint);
   return fetchWithTimeout<T>(url, {
     method: "POST",
@@ -71,10 +76,10 @@ export async function apiGet<T>(
   params?: Record<string, any>,
   clientCode?: string
 ): Promise<T> {
- 
+
   const url = buildUrl(endpoint, params);
-  
-  console.log(buildHeaders(clientCode)); 
+
+  console.log(buildHeaders(clientCode));
 
   return fetchWithTimeout<T>(url, {
     method: "GET",
