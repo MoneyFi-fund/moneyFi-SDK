@@ -15,20 +15,11 @@ npm install @moneyfi/ts-sdk
 ### 1. Import & Initialize
 
 ```typescript
-import type { ChainSetting, UserStatistic } from '@moneyfi/ts-sdk';
-import { MoneyFi , CHAIN_ID } from '@moneyfi/ts-sdk';
-
-// Configure supported chains
-const chainSettings: ChainSetting[] = [
-  {
-    chain_id: CHAIN_ID.APTOS,
-    custom_rpc_url: 'https://fullnode.mainnet.aptoslabs.com/v1'
-  },
-  // Add other chains as needed
-];
+import type { UserStatistic } from '@moneyfi/ts-sdk';
+import { MoneyFi } from '@moneyfi/ts-sdk';
 
 // Initialize SDK
-const moneyFi = new MoneyFi(chainSettings);
+const moneyFi = new MoneyFi("integration_code");
 ```
 
 ### 2. Basic Usage Example
@@ -37,8 +28,6 @@ const moneyFi = new MoneyFi(chainSettings);
 // Create or get user
 const user = await moneyFi.createUser({
   user_address: 'your-wallet-address',
-  ref_by: 'optional-referral-code', 
-  is_partnership: true | false
 });
 
 // Check if wallet account exists
@@ -62,11 +51,11 @@ const depositPayload = await moneyFi.getDepositTxPayload({
 #### 🔹 Constructor
 
 ```typescript
-new MoneyFi(config: ChainSetting[])
+new MoneyFi(config)
 ```
 
 **Parameters**
-- `config` → Array of chain configurations, each containing `chain_id` and `custom_rpc_url`
+- `config` → Array of chain configurations, each containing `chains`, `integration_code` and `api_key`
 
 **Throws**
 - Error when config array is empty
@@ -199,7 +188,7 @@ Lists all supported tokens across networks.
 
 ---
 
-#### 🔹 getUserInfor(address)
+#### 🔹 getUserInformation(address)
 
 Fetches detailed user information by wallet address.
 
@@ -211,32 +200,15 @@ Fetches detailed user information by wallet address.
 
 ---
 
-#### 🔹 getQoute(params)
+#### 🔹 getMaxQuotesAmount(params)
 
 Gets pricing and quote information for trading operations.
 
 **Parameters**
-- `params: GetQouteParam` → Quote request parameters.
+- `params: GetQuoteParam` → Quote request parameters.
 
 **Returns**
-- `Promise<User>` → Quote information and pricing details
-
----
-
-### Utility Methods
-
-#### 🔹 getUrlRpcByChainId(chainId)
-
-Resolves the configured RPC URL for a specific chain.
-
-**Parameters**
-- `chainId: number` → Target blockchain ID
-
-**Returns**
-- `string` → Custom RPC URL for the specified chain
-
-**Throws**
-- Error when no matching chain settings are found
+- `Promise<GetQuoteResponse>` → Quote information and pricing details
 
 ---
 
@@ -256,10 +228,27 @@ Resolves the configured RPC URL for a specific chain.
 1. Call `reqWithdraw(address, payload)` for off-chain processing
 2. Use `getWithdrawStatus(address)` to monitor withdrawal progress
 3. Call `getWithdrawTxPayload(params)` for on-chain withdrawal
+4. Pass returned payload to the connected wallet for user signing
+5. Submit the signed transaction to the blockchain
+6. Monitor transaction status
+
+### Claim referral reward Flow
+1. Call `getWithdrawTxPayload(params)` for on-chain withdrawal
+2. Pass returned payload to the connected wallet for user signing
+3. Submit the signed transaction to the blockchain
+4. Monitor transaction status
 
 ### User Information
 1. Call `getUserStatistic(params)` to retrieve a user’s investment analytics.
-2. Use `getUserInfor(address)` to retrieve a user’s general information.
+2. Use `getUserInformation(address)` to retrieve a user’s general information.
+
+### Supported chains and tokens
+1. Call `getSupportedChains()` to retrieve list of supported chain.
+2. Use `getSupportedTokens()` to retrieve list of supported token.
 
 
 ### Example: https://github.com/MoneyFi-fund/moneyfi-SDK-example
+
+## Documentation
+- [API Reference](https://github.com/your-org/your-sdk/blob/main/docs/api.md)
+- [Examples] (https://github.com/MoneyFi-fund/moneyfi-SDK-example)

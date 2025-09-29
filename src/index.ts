@@ -4,4 +4,4 @@
 export * from "./errors";
 export * from "./aptos/transactions";
 export * from "./utils";
-export * from "./types"; 
+export * from "./types";
