@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
-import { CreateUserPayload, User, UserStatistic, UserStaticsParam, HasWalletAccountParam, TxPayloadDepositParam, TxPayloadWithdrawParam, ReqWithdrawPayload, WithdrawStatusResponse, SupportedChains, SupportedTokens, TxInitializationWalletAccountParam, TxPayloadWithdrawResponse, TxPayloadDepositResponse, GetMaxQuoteParam, GetMaxQuotesResponse } from "../../types/types";
-import { MoneyFiErrors } from "../../errors/index";
-import { apiPost, apiGet } from "../../utils/helpers";
+import { CreateUserPayload, User, UserStatistic, UserStaticsParam, HasWalletAccountParam, TxPayloadDepositParam, TxPayloadWithdrawParam, ReqWithdrawPayload, WithdrawStatusResponse, SupportedChains, SupportedTokens, TxInitializationWalletAccountParam, TxPayloadWithdrawResponse, TxPayloadDepositResponse, GetMaxQuoteParam, GetMaxQuotesResponse } from "../types/types";
+import { MoneyFiErrors } from "../errors/index";
+import { apiPost, apiGet } from "../utils/helpers";
 
 /**
  * MoneyFi SDK entry for transaction-related operations.

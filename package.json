@@ -67,7 +67,7 @@
     "typedoc-plugin-missing-exports": "^4.0.0",
     "typescript": "^5.8.2"
   },
-  "version": "0.1.2",
+  "version": "0.1.3",
   "publishConfig": {
     "access": "public"
   }

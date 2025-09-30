@@ -8,6 +8,7 @@ This library provides **ready-to-use transaction payloads** and API methods so f
 
 ```bash
 npm install @moneyfi/ts-sdk
+yarn add @moneyfi/ts-sdk
 ```
 
 ## 🚀 Quick Start
@@ -215,28 +216,37 @@ Gets pricing and quote information for trading operations.
 ## Frontend Integration Flow
 ### User Management
 1. Use `createUser(payload)` to register new users if not exist
+#### With Aptos integration
 2. Call `hasWalletAccount(params)` to check wallet account exist in Aptos
 3. Use `getInitializationWalletAccountTxPayload(params)` if wallet account setup is needed in Aptos and then submit the signed transaction to the blockchain
+4. Deserialize the transaction in case of in Aptos transaction using Aptos SDK helpers
+5. Extract the operator authentication from the signed transaction
+6. Construct a multi-agent transaction
+7. Submit the signed transaction to the blockchain
+8. Monitor transaction status
 
 ### Deposit Flow
 1. Call `getDepositTxPayload(params)` with deposit details
-2. Pass returned payload to the connected wallet for user signing
-3. Submit the signed transaction to the blockchain
-4. Monitor transaction status
+2. Deserialize the transaction in case of in Aptos transaction using Aptos SDK helpers
+3. Pass returned payload to the connected wallet for user signing
+4. Submit the signed transaction to the blockchain
+5. Monitor transaction status
 
 ### Withdrawal Flow
 1. Call `reqWithdraw(address, payload)` for off-chain processing
 2. Use `getWithdrawStatus(address)` to monitor withdrawal progress
 3. Call `getWithdrawTxPayload(params)` for on-chain withdrawal
-4. Pass returned payload to the connected wallet for user signing
-5. Submit the signed transaction to the blockchain
-6. Monitor transaction status
+4. Deserialize the transaction in case of in Aptos transaction using Aptos SDK helpers
+5. Pass returned payload to the connected wallet for user signing
+6. Submit the signed transaction to the blockchain
+7. Monitor transaction status
 
 ### Claim referral reward Flow
 1. Call `getWithdrawTxPayload(params)` for on-chain withdrawal
-2. Pass returned payload to the connected wallet for user signing
-3. Submit the signed transaction to the blockchain
-4. Monitor transaction status
+2. Deserialize the transaction in case of in Aptos transaction using Aptos SDK helpers
+3. Pass returned payload to the connected wallet for user signing
+4. Submit the signed transaction to the blockchain
+5. Monitor transaction status
 
 ### User Information
 1. Call `getUserStatistic(params)` to retrieve a user’s investment analytics.
@@ -246,8 +256,6 @@ Gets pricing and quote information for trading operations.
 1. Call `getSupportedChains()` to retrieve list of supported chain.
 2. Use `getSupportedTokens()` to retrieve list of supported token.
 
-
-### Example: https://github.com/MoneyFi-fund/moneyfi-SDK-example
 
 ## Documentation
 - [API Reference](https://github.com/MoneyFi-fund/moneyFi-SDK/blob/feat/referral-fee/docs/api.md)
