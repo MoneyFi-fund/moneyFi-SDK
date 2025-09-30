@@ -5,10 +5,10 @@ This document provides an overview of all API endpoints called within the **Mone
 ---
 
 ## 🔑 Base Info
-- **Base Path:** `v1/sdk/`
+- **Base Path:** `https://api.moneyfi.fund`
 - **Transport:** HTTPS (POST/GET depending on method)
 - **Authentication:** `integration_code` passed internally by SDK
-- **Headers:** All requests must include the required headers (see [Header Requirements](#-header-requirements))
+- **Headers:** All requests must include the required headers (see [Header Requirements](#headerrequirements))
 ---
 
 ## 📋 API Endpoints
@@ -265,5 +265,14 @@ type TxPayloadWithdrawResponse = {
 ```ts
 type TxPayloadDepositResponse = {
   tx: string;
+}
+```
+
+### `HeaderRequirements`
+```ts
+{
+  headers: {
+     "X-Client-Code": "integration code", 
+  }
 }
 ```

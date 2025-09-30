@@ -44,8 +44,7 @@ describe("transaction", () => {
     let txInitializeWalletAccount: TxInitializationWalletAccountParam = {
       user_address: { Aptos: existWalletAccount },
     }
-    let result = await moneyFi.getTxInitializationWalletAccount(txInitializeWalletAccount);
-    console.log({result})
+    let result = await moneyFi.getInitializationWalletAccountTxPayload(txInitializeWalletAccount);
   });
 
   test("it should return tx withdraw payload", async () => {
@@ -67,7 +66,7 @@ describe("transaction", () => {
       address: address,
     }
     const exist = await moneyFi.getUserStatistic(userStaticsParam);
-    console.log({exist});
+
     expect(exist).toBeDefined();
     expect(exist).toMatchObject<UserStatistic>({
       total_value: expect.any(Number),
@@ -103,7 +102,6 @@ describe("transaction", () => {
   test("it should return withdraw status", async () => {
     const address = "0xecf0f2baef446955c8b0eeb086c2fbec7ab56a04ad5aaca8fa58a26b4e13dd67";
     const exist = await moneyFi.getWithdrawStatus(address);
-    console.log({exist}); 
     expect(exist).toEqual({ status: null });
   });
 
@@ -120,7 +118,13 @@ describe("transaction", () => {
 
     const exist = await moneyFi.getUserInformation(existWalletAccount);
 
-    console.log({exist}); 
+    // expect(exist.address).toBe(existWalletAccount);
+  });
+
+    test("it should return user information", async () => {
+    let existWalletAccount = "0x473c00ac17a17d3caa08b9079d52085239dcf14de7e5de2c6554583fd82a3f28";
+
+    const exist = await moneyFi.getUserInformation(existWalletAccount);
 
     // expect(exist.address).toBe(existWalletAccount);
   });

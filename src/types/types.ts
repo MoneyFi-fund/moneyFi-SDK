@@ -35,7 +35,7 @@ export type WithdrawStatusResponse = {
 
 export type SupportedChains = {
   evm: string[];
-  altos: string;
+  aptos: string;
 };
 
 export type TokenInfo = {

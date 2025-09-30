@@ -51,7 +51,7 @@ export class MoneyFi {
    * @param params - Wallet account initialization parameters.
    * @returns Promise resolving to a signed transaction string.
    */
-  async getTxInitializationWalletAccount(params: TxInitializationWalletAccountParam): Promise<string> {
+  async getInitializationWalletAccountTxPayload(params: TxInitializationWalletAccountParam): Promise<string> {
     return await apiPost<string>("v1/sdk/create-wallet-account", params, this.integration_code);
   }
 

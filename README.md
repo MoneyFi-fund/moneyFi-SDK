@@ -55,7 +55,7 @@ new MoneyFi(config)
 ```
 
 **Parameters**
-- `config` → Array of chain configurations, each containing `chains`, `integration_code` and `api_key`
+- `config` → Array of chain configurations, each containing `integration_code`.
 
 **Throws**
 - Error when config array is empty
@@ -78,7 +78,7 @@ Creates or registers a user in the MoneyFi backend.
 
 Checks if a given Aptos account already has a MoneyFi wallet account initialized on-chain.
 
-Useful before calling getDepositTxPayload or getTxInitializationWalletAccount.
+Useful before calling getDepositTxPayload or getInitializationWalletAccountTxPayload.
 
 **Parameters**
 - `params: HasWalletAccountParam` → Parameters including user address
@@ -88,7 +88,7 @@ Useful before calling getDepositTxPayload or getTxInitializationWalletAccount.
 
 ---
 
-#### 🔹 getTxInitializationWalletAccount(params)
+#### 🔹 getInitializationWalletAccountTxPayload(params)
 
 Requests initialization transaction for creating a wallet account (Aptos specific).
 User must be create wallet account before depositing in Aptos. Each Aptos account corresponds to only one wallet account.
@@ -216,7 +216,7 @@ Gets pricing and quote information for trading operations.
 ### User Management
 1. Use `createUser(payload)` to register new users if not exist
 2. Call `hasWalletAccount(params)` to check wallet account exist in Aptos
-3. Use `getTxInitializationWalletAccount(params)` if wallet account setup is needed in Aptos and then submit the signed transaction to the blockchain
+3. Use `getInitializationWalletAccountTxPayload(params)` if wallet account setup is needed in Aptos and then submit the signed transaction to the blockchain
 
 ### Deposit Flow
 1. Call `getDepositTxPayload(params)` with deposit details
