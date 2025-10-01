@@ -84,10 +84,10 @@ export type GetMaxQuoteParam = {
 }
 
 export type GetMaxQuotesResponse = {
-  list_max_quote: {
-    token: string; 
-    chain_id: number; 
-    amount: number; 
+  data: {
+    chain_id: string; 
+    usdt: number; 
+    usdc: number; 
   }[]
 }
 

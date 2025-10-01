@@ -3,6 +3,7 @@ import { VERSION } from "../version";
 import { SDK_TYPE } from "./const";
 import { API_DEFAULT_TIMEOUT } from "../index";
 
+
 async function fetchWithTimeout<T>(
   url: string,
   options: RequestInit = {},
@@ -10,16 +11,20 @@ async function fetchWithTimeout<T>(
 ): Promise<T> {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), timeout);
+
   try {
     const res = await fetch(url, { ...options, signal: controller.signal });
     clearTimeout(timer);
 
+    // Try to read body safely
+    const text = await res.text();
+    const data = text ? JSON.parse(text) : null;
+
     if (!res.ok) {
-      const errorData = await res.json().catch(() => res.statusText);
-      throw new Error(typeof errorData === "string" ? errorData : JSON.stringify(errorData));
+      throw new Error(typeof data === "string" ? data : JSON.stringify(data));
     }
 
-    return (await res.json()) as T;
+    return data as T;
   } catch (err: any) {
     if (err.name === "AbortError") {
       throw new Error("Request timed out");
