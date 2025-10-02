@@ -105,6 +105,14 @@ This document provides an overview of all API endpoints called within the **Mone
 
 ---
 
+### 13. **Get Available Assets In Wallet Account**
+- **Method:** `GET`
+- **Endpoint:** `v1/sdk/get-wallet-account-assets`
+- **Params:** [`GetWalletAccountAssetsParam`](#getWalletAccountAssetsParam)
+- **Response:** [`GetWalletAccountAssetsResponse`](#getWalletAccountAssetsResponse)
+
+---
+
 ## 📦 Types
 
 ### `User`
@@ -266,6 +274,22 @@ type TxPayloadWithdrawResponse = {
 type TxPayloadDepositResponse = {
   tx: string;
 }
+```
+
+### `GetWalletAccountAssetsParam`
+```ts
+type GetWalletAccountAssetsParam = {
+  sender: string;
+}
+```
+
+### `GetWalletAccountAssetsResponse`
+```ts
+type GetMaxQuotesResponse = {
+    chain_id: string; 
+    usdt: number; 
+    usdc: number; 
+}[]
 ```
 
 ### `HeaderRequirements`

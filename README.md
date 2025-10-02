@@ -213,6 +213,18 @@ Gets pricing and quote information for trading operations.
 
 ---
 
+#### 🔹 getWalletAccountAssets(params)
+
+Retrieve available assets in wallet account - only in Aptos network.
+
+**Parameters**
+- `params: GetWalletAccountAssetsParam` → Wallet account assets parameters.
+
+**Returns**
+- `Promise<GetWalletAccountAssetsResponse>` → Wallet account assets response
+
+---
+
 ## Frontend Integration Flow
 ### User Management
 1. Use `createUser(payload)` to register new users if not exist
@@ -249,12 +261,13 @@ Gets pricing and quote information for trading operations.
 5. Monitor transaction status
 
 ### User Information
-1. Call `getUserStatistic(params)` to retrieve a user’s investment analytics.
-2. Use `getUserInformation(address)` to retrieve a user’s general information.
+1. Call `getUserStatistic(params)` to retrieve a user’s investment analytics
+2. Call `getUserInformation(address)` to retrieve a user’s general information
+3. Call `getWalletAccountAssets(params)` to retrieve available assets in wallet account - only in Aptos network
 
 ### Supported chains and tokens
-1. Call `getSupportedChains()` to retrieve list of supported chain.
-2. Use `getSupportedTokens()` to retrieve list of supported token.
+1. Call `getSupportedChains()` to retrieve list of supported chain
+2. Call `getSupportedTokens()` to retrieve list of supported token
 
 
 ## Documentation
