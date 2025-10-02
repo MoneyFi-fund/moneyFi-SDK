@@ -83,12 +83,19 @@ export type GetMaxQuoteParam = {
   sender: string;
 }
 
+export type GetWalletAccountAssetsParam = {
+  sender: string;
+}
+
+export type GetWalletAccountAssetsResponse = {
+  token_address: string; 
+  withdraw_amount: number;
+}
+
 export type GetMaxQuotesResponse = {
-  data: {
     chain_id: string; 
     usdt: number; 
     usdc: number; 
-  }[]
 }
 
 export type UserStaticsParam = {

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-import { CreateUserPayload, User, UserStatistic, UserStaticsParam, HasWalletAccountParam, TxPayloadDepositParam, TxPayloadWithdrawParam, ReqWithdrawPayload, WithdrawStatusResponse, SupportedChains, SupportedTokens, TxInitializationWalletAccountParam, TxPayloadWithdrawResponse, TxPayloadDepositResponse, GetMaxQuoteParam, GetMaxQuotesResponse } from "../types/types";
+import { CreateUserPayload, User, UserStatistic, UserStaticsParam, HasWalletAccountParam, TxPayloadDepositParam, TxPayloadWithdrawParam, ReqWithdrawPayload, WithdrawStatusResponse, SupportedChains, SupportedTokens, TxInitializationWalletAccountParam, TxPayloadWithdrawResponse, TxPayloadDepositResponse, GetMaxQuoteParam, GetMaxQuotesResponse, GetWalletAccountAssetsParam, GetWalletAccountAssetsResponse } from "../types/types";
 import { MoneyFiErrors } from "../errors/index";
 import { apiPost, apiGet } from "../utils/helpers";
 
@@ -144,7 +144,16 @@ export class MoneyFi {
     * @param params - Quote request parameters.
     * @returns Promise resolving to a {@link GetMaxQuoteResponse}.
     */
-  async getMaxQuotesAmount(params: GetMaxQuoteParam): Promise<GetMaxQuotesResponse> {
-    return await apiGet<GetMaxQuotesResponse>(`v1/sdk/get-max-quotes-amount`, params, this.integration_code);
+  async getMaxQuotesAmount(params: GetMaxQuoteParam): Promise<GetMaxQuotesResponse[]> {
+    return await apiGet<GetMaxQuotesResponse[]>(`v1/sdk/get-max-quotes-amount`, params, this.integration_code);
+  }
+
+  /**
+    * Retrieve available assets in wallet account.
+    * @param params - Wallet account assets parameters.
+    * @returns Promise resolving to a {@link GetWalletAccountAssetsResponse[]}.
+    */
+  async getWalletAccountAssets(params: GetWalletAccountAssetsParam): Promise<GetWalletAccountAssetsResponse[]> {
+    return await apiGet<GetWalletAccountAssetsResponse[]>(`v1/sdk/get-wallet-account-assets`, params, this.integration_code);
   }
 }
