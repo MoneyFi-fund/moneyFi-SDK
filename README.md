@@ -271,5 +271,5 @@ Retrieve available assets in wallet account - only in Aptos network.
 
 
 ## Documentation
-- [API Reference](https://github.com/MoneyFi-fund/moneyFi-SDK/blob/feat/referral-fee/docs/api.md)
+- [API Reference](https://github.com/MoneyFi-fund/moneyFi-SDK/blob/main/docs/api.md)
 - [Examples](https://github.com/MoneyFi-fund/moneyfi-SDK-example)
