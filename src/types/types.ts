@@ -1,22 +1,11 @@
 
-export type ChainSetting = {
-  client_url: string;
-  chain_id: number
-};
-
-export type MoneyFiConfig = {
-  chains: ChainSetting[];
-  integration_code: string;
-  api_key: string; 
-}
-
 export type User = {
   id: number;
   created_at: string;
   address: string;
   ref_code: string;
   ref_by: string | null;
-  network: string; 
+  network: string;
   is_partnership: boolean;
 };
 
@@ -29,15 +18,13 @@ export type UserStatistic = {
   pending_yield_earnings: Number;
   total_withdrawn_liquidity: Number;
   apr_avg: Number;
-  referral_reward: Number; 
+  referral_balance: Number;
 }
 
 export type ReqWithdrawPayload = {
-  signature: string,
-  pubkey: string,
-  message: string, 
-  to_chain_id: number; 
-  from_chain_id: number[];
+  signature: String;
+  pubkey: String;
+  message: String;
 }
 
 export type TxnStatus = "done" | "failed" | "pending";
@@ -55,7 +42,7 @@ export type TokenInfo = {
   name: string;
   chain: string;
   address: string;
-  token_decimals: string; 
+  token_decimals: string;
 };
 
 export type SupportedTokens = {
@@ -79,53 +66,46 @@ export type HasWalletAccountParam = {
 }
 
 export type TxPayloadDepositParam = {
-  sender: string;      
-  chain_id: number;      
-  token_address: string; 
-  amount: bigint;      
+  sender: string;
+  chain_id: number;
+  token_address: string;
+  amount: bigint;
 }
 
 export type TxPayloadWithdrawParam = {
-  sender: string;      
+  sender: string;
   chain_id: number;
-  token_address: string; 
-  amount: bigint;      
+  token_address: string;
+  amount: bigint;
 }
 
-export type TxPayloadReferralRewardWithdrawParam = {
-  sender: string;      
-  chain_id: number;
-  token_address: string; 
-  amount: bigint;      
+export type GetMaxQuoteParam = {
+  sender: string;
 }
 
-export type GetQuoteParam = {
-  sender: string;      
-  to_chain_ids: number[];
+export type GetWalletAccountAssetsParam = {
+  sender: string;
+}
+
+export type GetWalletAccountAssetsResponse = {
+  token_address: string; 
+  withdraw_amount: number;
+}
+
+export type GetMaxQuotesResponse = {
+    chain_id: string; 
+    usdt: number; 
+    usdc: number; 
 }
 
 export type UserStaticsParam = {
   address: string;
-  chain_ids: number[];
 }
 
 export type TxPayloadWithdrawResponse = {
-  tx: string;   
+  tx: string;
 }
 
 export type TxPayloadDepositResponse = {
-  tx: string;   
-}
-
-export type TxPayloadReferralRewardWithdrawResponse = {
-  tx: string;   
-}
-
-
-export type GetQuoteResponse = {
-  list_quote: {
-    chain_id: number; 
-    token_address: string; 
-    amount: number;
-  }
+  tx: string;
 }
