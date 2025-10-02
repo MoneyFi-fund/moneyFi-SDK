@@ -284,5 +284,5 @@ Retrieve available assets in wallet account - only in Aptos network.
 
 
 ## Documentation
-- [API Reference](https://github.com/MoneyFi-fund/moneyFi-SDK/feat/v0.1.4/docs/api.md)
+- [API Reference](https://github.com/MoneyFi-fund/moneyFi-SDK/blob/v0.1.4/docs/api.md)
 - [Examples](https://github.com/MoneyFi-fund/moneyfi-SDK-example)
