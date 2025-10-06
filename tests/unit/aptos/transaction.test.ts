@@ -5,7 +5,7 @@ import {
   MoneyFi,
 } from "../../../src";
 import { CreateUserPayload, UserStatistic, UserStaticsParam, HasWalletAccountParam, TxPayloadDepositParam, TxPayloadWithdrawParam, ReqWithdrawPayload, WithdrawStatusResponse, SupportedChains, SupportedTokens, TxInitializationWalletAccountParam } from "../../../src/types";
-
+import { CHAIN_ID } from "../../../src";
 describe("transaction", () => {
   let moneyFi: MoneyFi;
   let existWalletAccount: string;
@@ -52,7 +52,7 @@ describe("transaction", () => {
     let depositAmount = 1000;
     let withdrawParam: TxPayloadDepositParam = {
       sender: existWalletAccount,
-      chain_id: -1,
+      chain_id: CHAIN_ID.APTOS,
       token_address: usdcAptos,
       amount: BigInt(depositAmount),
     }
@@ -117,7 +117,7 @@ describe("transaction", () => {
     let existWalletAccount = "0x473c00ac17a17d3caa08b9079d52085239dcf14de7e5de2c6554583fd82a3f28";
 
     const exist = await moneyFi.getUserInformation(existWalletAccount);
-
+    
     // expect(exist.address).toBe(existWalletAccount);
   });
 

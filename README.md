@@ -68,7 +68,7 @@ new MoneyFi(config)
 Creates or registers a user in the MoneyFi backend.
 
 **Parameters**
-- `payload: CreateUserPayload` → User creation data including address and optional referral code
+- `payload: CreateUserPayload` → User creation data including address.
 
 **Returns**
 - `Promise<User>` → User object with registration details
@@ -127,19 +127,6 @@ This transaction can then be signed and submitted by the user’s wallet.
 
 **Returns**
 - `Promise<TxPayloadWithdrawResponse>` →  Raw transaction bytes (BCS-encoded) ready for signing & submitting.
-
----
-
-#### 🔹 getWithdrawReferralRewardTxPayload(params)
-
-Builds a raw transaction payload (BCS-encoded) for withdrawing referral reward tokens (USDC/USDT) from the MoneyFi protocol.
-This transaction can then be signed and submitted by the user’s wallet.
-
-**Parameters**
-- `params: TxPayloadReferralRewardWithdrawParam` → Tx payload referral reward withdrawal parameters
-
-**Returns**
-- `Promise<TxPayloadReferralRewardWithdrawResponse>` →  Raw transaction bytes (BCS-encoded) ready for signing & submitting.
 
 ---
 
@@ -239,6 +226,7 @@ Retrieve available assets in wallet account - only in Aptos network.
 ---
 
 ## Frontend Integration Flow
+## Detailed SDK Integration In Link Example  
 ### User Management
 1. Use `createUser(payload)` to register new users if not exist
 #### With Aptos integration
@@ -251,6 +239,10 @@ Retrieve available assets in wallet account - only in Aptos network.
 8. Monitor transaction status
 
 ### Deposit Flow
+- Pre-requirement: 
+1. EVM: Create user off-chain before making a deposit
+2. Aptos: Create user off-chain and initialize wallet account on-chain before making deposit
+- Flow:
 1. Call `getDepositTxPayload(params)` with deposit details
 2. Deserialize the transaction in case of in Aptos transaction using Aptos SDK helpers
 3. Pass returned payload to the connected wallet for user signing
