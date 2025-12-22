@@ -3,23 +3,15 @@ import { VERSION } from "../version";
 import { SDK_TYPE } from "./const";
 import { API_DEFAULT_TIMEOUT } from "../index";
 
-
-async function fetchWithTimeout<T>(
-  url: string,
-  options: RequestInit = {},
-  timeout = API_DEFAULT_TIMEOUT
-): Promise<T> {
+async function fetchWithTimeout<T>(url: string, options: RequestInit = {}, timeout = API_DEFAULT_TIMEOUT): Promise<T> {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), timeout);
 
   try {
     const res = await fetch(url, { ...options, signal: controller.signal });
     clearTimeout(timer);
-
-    // Try to read body safely
     const text = await res.text();
     const data = text ? JSON.parse(text) : null;
-
     if (!res.ok) {
       throw new Error(typeof data === "string" ? data : JSON.stringify(data));
     }
@@ -36,9 +28,9 @@ async function fetchWithTimeout<T>(
 function buildHeaders(clientCode?: string): HeadersInit {
   return {
     "Content-Type": "application/json",
-    "X-SDK": SDK_TYPE,                // e.g. "ts-sdk"
-    "X-SDK-Version": VERSION,         // from ../version
-    ...(clientCode ? { "X-Client-Code": clientCode } : {})
+    "X-SDK": SDK_TYPE, // e.g. "ts-sdk"
+    "X-SDK-Version": VERSION, // from ../version
+    ...(clientCode ? { "X-Client-Code": clientCode } : {}),
   };
 }
 
@@ -50,17 +42,13 @@ function buildUrl(endpoint: string, params?: Record<string, any>): string {
     Object.entries(params).reduce<Record<string, string>>((acc, [k, v]) => {
       if (v !== undefined && v !== null) acc[k] = String(v);
       return acc;
-    }, {})
+    }, {}),
   ).toString();
 
   return `${MoneyFiBaseApiUrl}/${endpoint}?${queryString}`;
 }
 
-export async function apiPost<T>(
-  endpoint: string,
-  data?: any,
-  clientCode?: string
-): Promise<T> {
+export async function apiPost<T>(endpoint: string, data?: any, clientCode?: string): Promise<T> {
   const url = buildUrl(endpoint);
   return fetchWithTimeout<T>(url, {
     method: "POST",
@@ -69,13 +57,8 @@ export async function apiPost<T>(
   });
 }
 
-export async function apiGet<T>(
-  endpoint: string,
-  params?: Record<string, any>,
-  clientCode?: string
-): Promise<T> {
+export async function apiGet<T>(endpoint: string, params?: Record<string, any>, clientCode?: string): Promise<T> {
   const url = buildUrl(endpoint, params);
-
   return fetchWithTimeout<T>(url, {
     method: "GET",
     headers: buildHeaders(clientCode),
