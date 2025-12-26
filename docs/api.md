@@ -101,7 +101,7 @@ This document provides an overview of all API endpoints called within the **Mone
 - **Method:** `GET`
 - **Endpoint:** `v1/sdk/get-max-quote-amount`
 - **Params:** [`GetMaxQuoteParam`](#getmaxqouteparam)
-- **Response:** [`GetMaxQuotesResponse`](#getmaxqoutesresponse)
+- **Response:** [`GetMaxQuotesResponses`](#getmaxqoutesresponses)
 
 ---
 
@@ -109,7 +109,7 @@ This document provides an overview of all API endpoints called within the **Mone
 - **Method:** `GET`
 - **Endpoint:** `v1/sdk/get-wallet-account-assets`
 - **Params:** [`GetWalletAccountAssetsParam`](#getWalletAccountAssetsParam)
-- **Response:** [`GetWalletAccountAssetsResponse`](#getWalletAccountAssetsResponse)
+- **Response:** [`GetWalletAccountAssetsResponses`](#getWalletAccountAssetsResponse)
 
 ---
 
@@ -219,11 +219,19 @@ type HasWalletAccountParam = {
 
 ### `TxPayloadDepositParam`
 ```ts
-type TxPayloadDepositParam = {
-  sender: string;
-  chain_id: number;
-  token_address: string;
-  amount: bigint;
+type TxPayloadDepositParam  = TxDepositAptosPayload | TxDepositEvmPayload;
+type TxDepositAptosPayload = {    
+  type: PayloadType;    
+  sender: string;    
+  token_address: string;   
+  amount: number; 
+}
+type TxDepositEvmPayload = {    
+  type: PayloadType;    
+  token_address: string;    
+  amount: string;  
+  chain_id: number;  
+  target_chain: number; 
 }
 ```
 
@@ -244,15 +252,16 @@ type GetMaxQuoteParam = {
 }
 ```
 
-### `GetMaxQuotesResponse`
+### `GetMaxQuotesResponses`
 ```ts
+type GetMaxQuotesResponses = {
+  data: GetMaxQuotesResponse[];
+};
 type GetMaxQuotesResponse = {
-  list_max_quote: {
-    token: string; 
-    chain_id: number; 
-    amount: number; 
-  }[]
-}
+  chain_id: string;
+  usdt: number;
+  usdc: number;
+};
 ```
 
 ### `UserStaticsParam`
@@ -271,9 +280,14 @@ type TxPayloadWithdrawResponse = {
 
 ### `TxPayloadDepositResponse`
 ```ts
-type TxPayloadDepositResponse = {
+type TxPayloadDepositResponse = TxPayloadDepositResponseEVM | TxPayloadDepositResponseAptos;
+type TxPayloadDepositResponseAptos = {
   tx: string;
-}
+};
+type TxPayloadDepositResponseEVM = {
+  tx: string;
+  evm_contract_address: string;
+};
 ```
 
 ### `GetWalletAccountAssetsParam`
@@ -283,13 +297,15 @@ type GetWalletAccountAssetsParam = {
 }
 ```
 
-### `GetWalletAccountAssetsResponse`
+### `GetWalletAccountAssetsResponses`
 ```ts
-type GetMaxQuotesResponse = {
-    chain_id: string; 
-    usdt: number; 
-    usdc: number; 
-}[]
+type GetWalletAccountAssetsResponses = {
+  data: GetWalletAccountAssetsResponse[]
+};
+type GetWalletAccountAssetsResponse = {
+  token_address: string;
+  withdraw_amount: number;
+};
 ```
 
 ### `HeaderRequirements`

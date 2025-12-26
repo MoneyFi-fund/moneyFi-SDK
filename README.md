@@ -23,7 +23,7 @@ import { MoneyFi } from '@moneyfi/ts-sdk';
 const moneyFi = new MoneyFi("integration_code");
 ```
 
-### 2. Basic Usage Example
+### 2. Basic Usage Example in the Aptos blockchain
 
 ```typescript
 // Create or get user
@@ -38,10 +38,28 @@ const hasAccount = await moneyFi.hasWalletAccount({
 
 // Get deposit transaction payload
 const depositPayload = await moneyFi.getDepositTxPayload({
-  chain_id: CHAIN_ID.APTOS,
+  type: PayloadType.Aptos,
   sender: 'your-wallet-address',
   token_address: 'token-contract-address',
-  amount: BigInt(1000)
+  amount: 100000
+});
+```
+
+### 3. Basic Usage Example in the EVM-compatible blockchains
+
+```typescript
+// Create or get user
+const user = await moneyFi.createUser({
+  user_address: 'your-wallet-address',
+});
+
+// Get deposit transaction payload
+const depositPayload = await moneyFi.getDepositTxPayload({
+  type: PayloadType.Evm,
+  chain_id: 'chain-id',
+  token_address: 'token-contract-address',
+  amount: 100_000, 
+  target_chain: 'aptos_chain_id'
 });
 ```
 
@@ -221,15 +239,38 @@ Retrieve available assets in wallet account - only in Aptos network.
 - `params: GetWalletAccountAssetsParam` → Wallet account assets parameters.
 
 **Returns**
-- `Promise<GetWalletAccountAssetsResponse>` → Wallet account assets response
+- `Promise<GetWalletAccountAssetsResponses>` → Wallet account assets response
 
 ---
 
-## Frontend Integration Flow
-## Detailed SDK Integration In Link Example  
+#### 🔹 getUserAssetBalance(params)
+
+Retrieve user asset balance for a specific chain.
+
+**Parameters**
+- `params: GetUserAssetBalanceParam` → Asset balance query parameters.
+  - `sender: string` → User wallet address
+  - `chain_id: number` → Chain ID (e.g., 8453 for Base)
+  - `token?: string` → Optional token address filter
+
+**Returns**
+- `Promise<GetUserAssetBalanceResponse>` → User's asset balance info
+
+**Example**
+```typescript
+const balance = await moneyFi.getUserAssetBalance({
+  sender: "0x8648511f4afa5d127c4381f992904bce332b5617",
+  chain_id: 8453,
+  token: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913" // USDC on Base
+});
+console.log(balance); // { balance: 3 }
+```
+
+---
+
+## Frontend Integration Flow in Aptos blockchain
 ### User Management
 1. Use `createUser(payload)` to register new users if not exist
-#### With Aptos integration
 2. Call `hasWalletAccount(params)` to check wallet account exist in Aptos
 3. Use `getInitializationWalletAccountTxPayload(params)` if wallet account setup is needed in Aptos and then submit the signed transaction to the blockchain
 4. Deserialize the transaction in case of in Aptos transaction using Aptos SDK helpers
@@ -240,8 +281,7 @@ Retrieve available assets in wallet account - only in Aptos network.
 
 ### Deposit Flow
 - Pre-requirement: 
-1. EVM: Create user off-chain before making a deposit
-2. Aptos: Create user off-chain and initialize wallet account on-chain before making deposit
+1. Aptos: Create user off-chain and initialize wallet account on-chain before making deposit
 - Flow:
 1. Call `getDepositTxPayload(params)` with deposit details
 2. Deserialize the transaction in case of in Aptos transaction using Aptos SDK helpers
@@ -258,7 +298,7 @@ Retrieve available assets in wallet account - only in Aptos network.
 6. Submit the signed transaction to the blockchain
 7. Monitor transaction status
 
-### Claim referral reward Flow
+### Claim referral reward Flow 
 1. Call `getWithdrawTxPayload(params)` for on-chain withdrawal
 2. Deserialize the transaction in case of in Aptos transaction using Aptos SDK helpers
 3. Pass returned payload to the connected wallet for user signing
@@ -266,14 +306,43 @@ Retrieve available assets in wallet account - only in Aptos network.
 5. Monitor transaction status
 
 ### User Information
-1. Call `getUserStatistic(params)` to retrieve a user’s investment analytics
-2. Call `getUserInformation(address)` to retrieve a user’s general information
+1. Call `getUserStatistic(params)` to retrieve a user's investment analytics
+2. Call `getUserInformation(address)` to retrieve a user's general information
 3. Call `getWalletAccountAssets(params)` to retrieve available assets in wallet account - only in Aptos network
+4. Call `getUserAssetBalance(params)` to retrieve user asset balance for a specific chain
 
 ### Supported chains and tokens
 1. Call `getSupportedChains()` to retrieve list of supported chain
 2. Call `getSupportedTokens()` to retrieve list of supported token
 
+
+## Frontend Integration Flow in the EVM-compatible blockchains
+### User Management
+1. Use `createUser(payload)` to register new users if not exist
+
+### Deposit Flow
+- Pre-requirement: 
+1. EVM: Create user off-chain before making a deposit
+- Flow:
+1. Call `getDepositTxPayload(params)` with deposit details
+3. Pass returned payload to the connected wallet for user signing
+4. Submit the signed transaction to the blockchain
+5. Monitor transaction status
+
+### Withdrawal Flow
+1. Call `reqWithdraw(address, payload)` for off-chain processing
+2. Pass returned payload to the connected wallet for user signing
+3. Submit the signed transaction to the blockchain
+4. Monitor transaction status
+
+### User Information
+1. Call `getUserStatistic(params)` to retrieve a user's investment analytics
+2. Call `getUserInformation(address)` to retrieve a user's general information
+3. Call `getUserAssetBalance(params)` to retrieve user asset balance for a specific chain
+
+### Supported chains and tokens
+1. Call `getSupportedChains()` to retrieve list of supported chain
+2. Call `getSupportedTokens()` to retrieve list of supported token
 
 ## Documentation
 - [API Reference](https://github.com/MoneyFi-fund/moneyFi-SDK/blob/main/docs/api.md)
