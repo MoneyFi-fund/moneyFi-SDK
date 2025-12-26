@@ -15,6 +15,7 @@ import {
   TxInitializationWalletAccountParam,
   PayloadType,
   WithdrawRequestEvmPayload,
+  GetUserAssetBalanceParam,
 } from "../../../src/types";
 import { CHAIN_ID } from "../../../src";
 describe("Transaction EVM", () => {
@@ -103,8 +104,20 @@ describe("Transaction EVM", () => {
 
 
   // test("it should get user asset allocation", async () => {
-  //   const address = "0xbC8c981c039A1262002ee43AadF8e9A61fe084d4"; 
+  //   const address = "0xbC8c981c039A1262002ee43AadF8e9A61fe084d4";
   //   const res = await moneyFi.getUserAssetAllocationResponse(address);
   //   console.log(res);
   // });
+
+  test("it should get user asset balance", async () => {
+    const params: GetUserAssetBalanceParam = {
+      sender: "0x8648511f4afa5d127c4381f992904bce332b5617",
+      chain_id: 8453,
+      token: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913"
+    };
+    const res = await moneyFi.getUserAssetBalance(params);
+    console.log(res);
+    expect(res).toBeDefined();
+    expect(res.balance).toBeDefined();
+  });
 });

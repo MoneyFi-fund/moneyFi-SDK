@@ -17,6 +17,7 @@ export type UserStatistic = {
   pending_yield_earnings: Number;
   total_withdrawn_liquidity: Number;
   apr_avg: Number;
+  apy_avg: Number;
   referral_balance: Number;
 };
 
@@ -189,5 +190,15 @@ export interface BalanceByToken {
 
 export interface BalanceByProtocol {
   protocol: string;
+  balance: number;
+}
+
+export type GetUserAssetBalanceParam = {
+  sender: string;
+  chain_id: number;
+  token?: string;
+}
+
+export type GetUserAssetBalanceResponse = {
   balance: number;
 }

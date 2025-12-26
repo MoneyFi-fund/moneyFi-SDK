@@ -243,6 +243,31 @@ Retrieve available assets in wallet account - only in Aptos network.
 
 ---
 
+#### 🔹 getUserAssetBalance(params)
+
+Retrieve user asset balance for a specific chain.
+
+**Parameters**
+- `params: GetUserAssetBalanceParam` → Asset balance query parameters.
+  - `sender: string` → User wallet address
+  - `chain_id: number` → Chain ID (e.g., 8453 for Base)
+  - `token?: string` → Optional token address filter
+
+**Returns**
+- `Promise<GetUserAssetBalanceResponse>` → User's asset balance info
+
+**Example**
+```typescript
+const balance = await moneyFi.getUserAssetBalance({
+  sender: "0x8648511f4afa5d127c4381f992904bce332b5617",
+  chain_id: 8453,
+  token: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913" // USDC on Base
+});
+console.log(balance); // { balance: 3 }
+```
+
+---
+
 ## Frontend Integration Flow in Aptos blockchain
 ### User Management
 1. Use `createUser(payload)` to register new users if not exist
@@ -281,9 +306,10 @@ Retrieve available assets in wallet account - only in Aptos network.
 5. Monitor transaction status
 
 ### User Information
-1. Call `getUserStatistic(params)` to retrieve a user’s investment analytics
-2. Call `getUserInformation(address)` to retrieve a user’s general information
+1. Call `getUserStatistic(params)` to retrieve a user's investment analytics
+2. Call `getUserInformation(address)` to retrieve a user's general information
 3. Call `getWalletAccountAssets(params)` to retrieve available assets in wallet account - only in Aptos network
+4. Call `getUserAssetBalance(params)` to retrieve user asset balance for a specific chain
 
 ### Supported chains and tokens
 1. Call `getSupportedChains()` to retrieve list of supported chain
@@ -310,8 +336,9 @@ Retrieve available assets in wallet account - only in Aptos network.
 4. Monitor transaction status
 
 ### User Information
-1. Call `getUserStatistic(params)` to retrieve a user’s investment analytics
-2. Call `getUserInformation(address)` to retrieve a user’s general information
+1. Call `getUserStatistic(params)` to retrieve a user's investment analytics
+2. Call `getUserInformation(address)` to retrieve a user's general information
+3. Call `getUserAssetBalance(params)` to retrieve user asset balance for a specific chain
 
 ### Supported chains and tokens
 1. Call `getSupportedChains()` to retrieve list of supported chain
