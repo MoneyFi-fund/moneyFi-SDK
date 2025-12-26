@@ -22,3 +22,9 @@ examples/typescript/facoin/facoin.json
 .env
 .env.*
 *.tgz
+
+.claude
+plans/
+docs/
+.repomixignore
+CLAUDE.md

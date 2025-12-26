@@ -5,4 +5,4 @@
  *
  * hardcoded for now, we would want to have it injected dynamically
  */
-export const VERSION = "0.1.5";
+export const VERSION = "0.2.7";
