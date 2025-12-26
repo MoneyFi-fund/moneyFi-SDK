@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-import { CreateUserPayload, User, UserStatistic, UserStaticsParam, HasWalletAccountParam, TxPayloadDepositParam, TxPayloadWithdrawParam, ReqWithdrawPayload, WithdrawStatusResponse, SupportedChains, SupportedTokens, TxInitializationWalletAccountParam, TxPayloadWithdrawResponse, TxPayloadDepositResponse, GetMaxQuoteParam, GetMaxQuotesResponse, GetWalletAccountAssetsParam, GetWalletAccountAssetsResponse } from "../types/types";
+import { CreateUserPayload, User, UserStatistic, UserStaticsParam, HasWalletAccountParam, TxPayloadDepositParam, TxPayloadWithdrawParam, ReqWithdrawPayload, WithdrawStatusResponse, SupportedChains, SupportedTokens, TxInitializationWalletAccountParam, TxPayloadWithdrawResponse, TxPayloadDepositResponse, GetMaxQuoteParam, GetMaxQuotesResponse, GetWalletAccountAssetsParam, GetWalletAccountAssetsResponse, GetUserAssetBalanceParam, GetUserAssetBalanceResponse } from "../types/types";
 import { MoneyFiErrors } from "../errors/index";
 import { apiPost, apiGet } from "../utils/helpers";
 
@@ -155,5 +155,14 @@ export class MoneyFi {
     */
   async getWalletAccountAssets(params: GetWalletAccountAssetsParam): Promise<GetWalletAccountAssetsResponse[]> {
     return await apiGet<GetWalletAccountAssetsResponse[]>(`v1/sdk/get-wallet-account-assets`, params, this.integration_code);
+  }
+
+  /**
+   * Retrieve user asset balance for a specific chain.
+   * @param params - User asset balance parameters.
+   * @returns Promise resolving to a {@link GetUserAssetBalanceResponse}.
+   */
+  async getUserAssetBalance(params: GetUserAssetBalanceParam): Promise<GetUserAssetBalanceResponse> {
+    return await apiGet<GetUserAssetBalanceResponse>(`v1/sdk/get-user-asset-balance`, params, this.integration_code);
   }
 }
