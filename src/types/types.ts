@@ -18,6 +18,7 @@ export type UserStatistic = {
   pending_yield_earnings: Number;
   total_withdrawn_liquidity: Number;
   apr_avg: Number;
+  apy_avg: Number;
   referral_balance: Number;
 }
 
@@ -108,4 +109,16 @@ export type TxPayloadWithdrawResponse = {
 
 export type TxPayloadDepositResponse = {
   tx: string;
+}
+
+export type GetUserAssetBalanceParam = {
+  sender: string;
+  chain_id: number;
+  token?: string;
+}
+
+export type GetUserAssetBalanceResponse = {
+  balance: number;
+  token_address: string;
+  chain_id: number;
 }
