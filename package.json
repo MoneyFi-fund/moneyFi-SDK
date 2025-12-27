@@ -1,5 +1,5 @@
 {
-  "name": "moneyfi-ts-sdk",
+  "name": "@mvstp3fn/moneyfi-ts-sdk",
   "description": "MoneyFi TypeScript SDK",
   "packageManager": "pnpm@8.15.1",
   "license": "Apache-2.0",
@@ -67,7 +67,7 @@
     "typedoc-plugin-missing-exports": "^4.0.0",
     "typescript": "^5.8.2"
   },
-  "version": "0.2.7",
+  "version": "0.2.8",
   "publishConfig": {
     "access": "public"
   }

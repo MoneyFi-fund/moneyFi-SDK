@@ -202,3 +202,49 @@ export type GetUserAssetBalanceParam = {
 export type GetUserAssetBalanceResponse = {
   balance: number;
 }
+
+// Transaction History Types
+export enum TransactionMethod {
+  Withdraw = "Withdraw",
+  WithdrawRequest = "WithdrawRequest",
+  Distribute = "Distribute",
+  Deposit = "Deposit",
+  TransferFund = "TransferFund",
+}
+
+export enum AddressType {
+  StargateBridge = "StargateBridge",
+  FundVault = "FundVault",
+}
+
+export interface Transaction {
+  hash: string;
+  method: TransactionMethod;
+  created_at: string;
+  from: string;
+  to: string;
+  network: number;
+  to_network?: number;
+  protocol?: string;
+  protocol_name?: string;
+  amount: string;
+  token: string;
+  from_address_type?: AddressType;
+  to_address_type?: AddressType;
+  token_decimals?: number;
+  strategy_name?: string;
+}
+
+export type GetTransactionHistoryParam = {
+  limit?: number;
+  page?: number;
+  address?: string;
+  chain_id?: number;
+  only_deposit_withdraw?: boolean;
+};
+
+export type GetTransactionHistoryResponse = {
+  total: number;
+  page: number;
+  nodes: Transaction[];
+};

@@ -19,10 +19,12 @@ import {
   TxReqWithdrawResponse,
   GetMaxQuotesResponses,
   GetWalletAccountAssetsResponses,
-  GetBridgeStatusResponse, 
+  GetBridgeStatusResponse,
   GetUserAssetAllocationResponse,
-  GetUserAssetBalanceParam, 
-  GetUserAssetBalanceResponse
+  GetUserAssetBalanceParam,
+  GetUserAssetBalanceResponse,
+  GetTransactionHistoryParam,
+  GetTransactionHistoryResponse,
 } from "../types/types";
 import { MoneyFiErrors } from "../errors/index";
 import { apiPost, apiGet } from "../utils/helpers";
@@ -221,6 +223,24 @@ export class MoneyFi {
     return await apiGet<GetUserAssetBalanceResponse>(
       `v1/sdk/get-user-asset-balance`,
       params,
+      this.integration_code,
+    );
+  }
+
+  /**
+   * Retrieve paginated transaction history for a user.
+   * @param params - Transaction history query parameters.
+   * @returns Promise resolving to a {@link GetTransactionHistoryResponse}.
+   */
+  async getTransactionHistory(params: GetTransactionHistoryParam): Promise<GetTransactionHistoryResponse> {
+    const queryParams = {
+      limit: params.limit ?? 100,
+      page: params.page ?? 1,
+      ...params,
+    };
+    return await apiGet<GetTransactionHistoryResponse>(
+      `v1/sdk/transaction-history`,
+      queryParams,
       this.integration_code,
     );
   }

@@ -16,6 +16,7 @@ import {
   PayloadType,
   WithdrawRequestEvmPayload,
   GetUserAssetBalanceParam,
+  GetTransactionHistoryParam,
 } from "../../../src/types";
 import { CHAIN_ID } from "../../../src";
 describe("Transaction EVM", () => {
@@ -119,5 +120,34 @@ describe("Transaction EVM", () => {
     console.log(res);
     expect(res).toBeDefined();
     expect(res.balance).toBeDefined();
+  });
+
+  test("it should get transaction history", async () => {
+    const params: GetTransactionHistoryParam = {
+      limit: 10,
+      page: 1,
+      address: "0x23042F2D5B10cb21512c0a5a65a50cb8F5a24D67",
+    };
+    const res = await moneyFi.getTransactionHistory(params);
+    console.log(res);
+    expect(res).toBeDefined();
+    expect(res.total).toBeDefined();
+    expect(res.page).toBe(1);
+    expect(res.nodes).toBeDefined();
+    expect(Array.isArray(res.nodes)).toBe(true);
+  });
+
+  test("it should get transaction history with filters", async () => {
+    const params: GetTransactionHistoryParam = {
+      limit: 5,
+      page: 1,
+      address: "0x23042F2D5B10cb21512c0a5a65a50cb8F5a24D67",
+      chain_id: 8453,
+      only_deposit_withdraw: true,
+    };
+    const res = await moneyFi.getTransactionHistory(params);
+    console.log(res);
+    expect(res).toBeDefined();
+    expect(res.nodes).toBeDefined();
   });
 });
