@@ -268,6 +268,64 @@ console.log(balance); // { balance: 3 }
 
 ---
 
+#### 🔹 getTransactionHistory(params)
+
+Retrieve paginated transaction history for a user with optional filters.
+
+**Parameters**
+- `params: GetTransactionHistoryParam` → Transaction history query parameters.
+  - `limit?: number` → Number of transactions per page (default: 100, max: 100)
+  - `page?: number` → Page number (default: 1, min: 1)
+  - `address?: string` → Optional wallet address filter
+  - `chain_id?: number` → Optional chain ID filter
+  - `only_deposit_withdraw?: boolean` → Filter for deposit/withdraw transactions only
+
+**Returns**
+- `Promise<GetTransactionHistoryResponse>` → Paginated transaction history
+  - `total: number` → Total number of transactions
+  - `page: number` → Current page number
+  - `nodes: Transaction[]` → Array of transaction records
+
+**Transaction Object**
+```typescript
+interface Transaction {
+  hash: string;
+  method: TransactionMethod; // Withdraw, WithdrawRequest, Distribute, Deposit, TransferFund
+  created_at: string;
+  from: string;
+  to: string;
+  network: number;
+  to_network?: number;
+  protocol?: string;
+  protocol_name?: string;
+  amount: string;
+  token: string;
+  from_address_type?: AddressType; // StargateBridge, FundVault
+  to_address_type?: AddressType;
+  token_decimals?: number;
+  strategy_name?: string;
+}
+```
+
+**Example**
+```typescript
+const history = await moneyFi.getTransactionHistory({
+  address: "0x23042F2D5B10cb21512c0a5a65a50cb8F5a24D67",
+  limit: 10,
+  page: 1,
+  chain_id: 8453, // Base chain
+  only_deposit_withdraw: true
+});
+console.log(history);
+// {
+//   total: 7,
+//   page: 1,
+//   nodes: [{ hash: "...", method: "Deposit", amount: "43000000", ... }]
+// }
+```
+
+---
+
 ## Frontend Integration Flow in Aptos blockchain
 ### User Management
 1. Use `createUser(payload)` to register new users if not exist
@@ -310,6 +368,7 @@ console.log(balance); // { balance: 3 }
 2. Call `getUserInformation(address)` to retrieve a user's general information
 3. Call `getWalletAccountAssets(params)` to retrieve available assets in wallet account - only in Aptos network
 4. Call `getUserAssetBalance(params)` to retrieve user asset balance for a specific chain
+5. Call `getTransactionHistory(params)` to retrieve paginated transaction history
 
 ### Supported chains and tokens
 1. Call `getSupportedChains()` to retrieve list of supported chain
@@ -339,6 +398,7 @@ console.log(balance); // { balance: 3 }
 1. Call `getUserStatistic(params)` to retrieve a user's investment analytics
 2. Call `getUserInformation(address)` to retrieve a user's general information
 3. Call `getUserAssetBalance(params)` to retrieve user asset balance for a specific chain
+4. Call `getTransactionHistory(params)` to retrieve paginated transaction history
 
 ### Supported chains and tokens
 1. Call `getSupportedChains()` to retrieve list of supported chain
