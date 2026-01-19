@@ -1,7 +1,34 @@
 // SPDX-License-Identifier: Apache-2.0
-import { CreateUserPayload, User, UserStatistic, UserStaticsParam, HasWalletAccountParam, TxPayloadDepositParam, TxPayloadWithdrawParam, ReqWithdrawPayload, WithdrawStatusResponse, SupportedChains, SupportedTokens, TxInitializationWalletAccountParam, TxPayloadWithdrawResponse, TxPayloadDepositResponse, GetMaxQuoteParam, GetMaxQuotesResponse, GetWalletAccountAssetsParam, GetWalletAccountAssetsResponse } from "../types/types";
+import {
+  CreateUserPayload,
+  User,
+  UserStatistic,
+  UserStaticsParam,
+  HasWalletAccountParam,
+  TxPayloadDepositParam,
+  TxPayloadWithdrawParam,
+  ReqWithdrawPayload,
+  WithdrawStatusResponse,
+  SupportedChains,
+  SupportedTokens,
+  TxInitializationWalletAccountParam,
+  TxPayloadWithdrawResponse,
+  TxPayloadDepositResponse,
+  GetMaxQuoteParam,
+  GetWalletAccountAssetsParam,
+  TxReqWithdrawResponse,
+  GetMaxQuotesResponses,
+  GetWalletAccountAssetsResponses,
+  GetBridgeStatusResponse,
+  GetUserAssetAllocationResponse,
+  GetUserAssetBalanceParam,
+  GetUserAssetBalanceResponse,
+  GetTransactionHistoryParam,
+  GetTransactionHistoryResponse,
+} from "../types/types";
 import { MoneyFiErrors } from "../errors/index";
 import { apiPost, apiGet } from "../utils/helpers";
+import { MoneyFiBaseApiUrl } from "../utils";
 
 /**
  * MoneyFi SDK entry for transaction-related operations.
@@ -38,10 +65,10 @@ export class MoneyFi {
   }
 
   /**
-    * Create a user in MoneyFi backend.
-    * @param payload - User creation payload.
-    * @returns Promise resolving to a {@link User}.
-    */
+   * Create a user in MoneyFi backend.
+   * @param payload - User creation payload.
+   * @returns Promise resolving to a {@link User}.
+   */
   async createUser(payload: CreateUserPayload): Promise<User> {
     return await apiPost("v1/sdk/create-user", payload, this.integration_code);
   }
@@ -56,21 +83,21 @@ export class MoneyFi {
   }
 
   /**
-    * Check if a wallet account exists.
-    * @param params - Wallet account check parameters.
-    * @returns Promise resolving to `true` if wallet exists, otherwise `false`.
-    */
+   * Check if a wallet account exists.
+   * @param params - Wallet account check parameters.
+   * @returns Promise resolving to `true` if wallet exists, otherwise `false`.
+   */
   async hasWalletAccount(params: HasWalletAccountParam): Promise<boolean> {
     return await apiGet<boolean>("v1/sdk/has-wallet-account", params, this.integration_code);
   }
 
   /**
-    * Generate deposit transaction payload.
-    * @param params - Deposit transaction parameters.
-    * @returns Promise resolving to a {@link TxPayloadDepositResponse}.
-    */
+   * Generate deposit transaction payload.
+   * @param params - Deposit transaction parameters.
+   * @returns Promise resolving to a {@link TxPayloadDepositResponse}.
+   */
   async getDepositTxPayload(params: TxPayloadDepositParam): Promise<TxPayloadDepositResponse> {
-    return await apiGet<TxPayloadDepositResponse>("v1/sdk/tx-payload-deposit", params, this.integration_code);
+    return await apiPost<TxPayloadDepositResponse>("v1/sdk/tx-payload-deposit", params, this.integration_code);
   }
 
   /**
@@ -83,34 +110,51 @@ export class MoneyFi {
   }
 
   /**
-    * Retrieve user statistics on-chain and off-chain.
-    * @param params - Statistics request parameters.
-    * @returns Promise resolving to a {@link UserStatistic}.
-    */
+   * Retrieve user statistics on-chain and off-chain.
+   * @param params - Statistics request parameters.
+   * @returns Promise resolving to a {@link UserStatistic}.
+   */
   async getUserStatistic(params: UserStaticsParam): Promise<UserStatistic> {
     return await apiGet<UserStatistic>("v1/sdk/user-statistic", params, this.integration_code);
   }
 
   /**
-    * Submit an off-chain withdraw request.
-    * @param address - User wallet address.
-    * @param payload - Withdraw request payload.
-    * @returns Promise resolving when request is successfully submitted.
-    */
-  async reqWithdraw(
-    address: string,
-    payload: ReqWithdrawPayload
-  ): Promise<void> {
-    return await apiPost(`v1/sdk/req-withdraw?address=${address}`, payload, this.integration_code);
+   * Submit an off-chain withdraw request.
+   * @param address - User wallet address.
+   * @param payload - Withdraw request payload.
+   * @returns Promise resolving when request is successfully submitted.
+   */
+  async reqWithdraw(payload: ReqWithdrawPayload): Promise<TxReqWithdrawResponse> {
+    // return await apiPost(`v1/sdk/req-withdraw?address=${address}`, payload, this.integration_code);
+    return await apiPost(`v1/sdk/req-withdraw`, payload, this.integration_code);
   }
 
   /**
-     * Get withdraw request status.
-     * @param address - User wallet address.
-     * @returns Promise resolving to a {@link WithdrawStatusResponse}.
-     */
+   * Get withdraw request status.
+   * @param address - User wallet address.
+   * @returns Promise resolving to a {@link WithdrawStatusResponse}.
+   */
   async getWithdrawStatus(address: string): Promise<WithdrawStatusResponse> {
-    return await apiGet<WithdrawStatusResponse>(`v1/sdk/req-withdraw-status?address=${address}`, {}, this.integration_code);
+    return await apiGet<WithdrawStatusResponse>(
+      `v1/sdk/req-withdraw-status?address=${address}`,
+      {},
+      this.integration_code,
+    );
+  }
+
+  /**
+   * Retrieves the current bridge (CCTP) withdrawal status for a user.
+   *
+   * @param address - The user's wallet address to query.
+   * @returns A promise resolving to a {@link GetBridgeStatusResponse} containing
+   *          the latest status of the bridge request associated with the address.
+   */
+  async getBridgeStatus(address: string): Promise<GetBridgeStatusResponse> {
+    return await apiGet<GetBridgeStatusResponse>(
+      `v1/sdk/get-latest-bridging-status?address=${address}`,
+      {},
+      this.integration_code,
+    );
   }
 
   /**
@@ -129,31 +173,83 @@ export class MoneyFi {
     return await apiGet<SupportedTokens>(`v1/sdk/get-supported-tokens`, {}, this.integration_code);
   }
 
-
   /**
-    * Retrieve user information by address.
-    * @param address - User wallet address.
-    * @returns Promise resolving to a {@link User}.
-    */
+   * Retrieve user information by address.
+   * @param address - User wallet address.
+   * @returns Promise resolving to a {@link User}.
+   */
   async getUserInformation(address: string): Promise<User> {
     return await apiGet<User>(`v1/sdk/get-user-information?sender=${address}`, {}, this.integration_code);
   }
 
   /**
-    * Retrieve maximum quote amount for a given request.
-    * @param params - Quote request parameters.
-    * @returns Promise resolving to a {@link GetMaxQuoteResponse}.
-    */
-  async getMaxQuotesAmount(params: GetMaxQuoteParam): Promise<GetMaxQuotesResponse[]> {
-    return await apiGet<GetMaxQuotesResponse[]>(`v1/sdk/get-max-quotes-amount`, params, this.integration_code);
+   * Retrieve maximum quote amount for a given request.
+   * @param params - Quote request parameters.
+   * @returns Promise resolving to a {@link GetMaxQuoteResponse}.
+   */
+  async getMaxQuotesAmount(params: GetMaxQuoteParam): Promise<GetMaxQuotesResponses> {
+    return await apiGet<GetMaxQuotesResponses>(`v1/sdk/get-max-quotes-amount`, params, this.integration_code);
   }
 
   /**
-    * Retrieve available assets in wallet account.
-    * @param params - Wallet account assets parameters.
-    * @returns Promise resolving to a {@link GetWalletAccountAssetsResponse[]}.
-    */
-  async getWalletAccountAssets(params: GetWalletAccountAssetsParam): Promise<GetWalletAccountAssetsResponse[]> {
-    return await apiGet<GetWalletAccountAssetsResponse[]>(`v1/sdk/get-wallet-account-assets`, params, this.integration_code);
+   * Retrieve available assets in wallet account.
+   * @param params - Wallet account assets parameters.
+   * @returns Promise resolving to a {@link GetWalletAccountAssetsResponse[]}.
+   */
+  async getWalletAccountAssets(params: GetWalletAccountAssetsParam): Promise<GetWalletAccountAssetsResponses> {
+    return await apiGet<GetWalletAccountAssetsResponses>(
+      `v1/sdk/get-wallet-account-assets`,
+      params,
+      this.integration_code,
+    );
+  }
+  
+  /**
+   * Retrieve the asset allocation for a user's wallet.
+   *
+   * @param address - The wallet address to query.
+   * @returns Promise resolving to a {@link GetUserAssetAllocationResponse}.
+   */
+  async getUserAssetAllocationResponse(address: string): Promise<GetUserAssetAllocationResponse> {
+      return await apiGet<GetUserAssetAllocationResponse>(`v1/sdk/get-user-assets-allocation?address=${address}`, {}, this.integration_code);
+  }
+
+  /**
+   * Retrieve user asset balance for a specific chain.
+   * @param params - Asset balance query parameters.
+   * @returns Promise resolving to a {@link GetUserAssetBalanceResponse}.
+   */
+  async getUserAssetBalance(params: GetUserAssetBalanceParam): Promise<GetUserAssetBalanceResponse> {
+    return await apiGet<GetUserAssetBalanceResponse>(
+      `v1/sdk/get-user-asset-balance`,
+      params,
+      this.integration_code,
+    );
+  }
+
+  /**
+   * Retrieve paginated transaction history for a user.
+   * @param params - Transaction history query parameters.
+   * @returns Promise resolving to a {@link GetTransactionHistoryResponse}.
+   */
+  async getTransactionHistory(params: GetTransactionHistoryParam): Promise<GetTransactionHistoryResponse> {
+    const queryParams = {
+      limit: params.limit ?? 100,
+      page: params.page ?? 1,
+      ...params,
+    };
+    return await apiGet<GetTransactionHistoryResponse>(
+      `v1/sdk/transaction-history`,
+      queryParams,
+      this.integration_code,
+    );
+  }
+
+  /**
+   * List supported chains from backend.
+   * @returns SupportedChains
+   */
+  async getBaseUrl(): Promise<String> {
+    return MoneyFiBaseApiUrl;
   }
 }
