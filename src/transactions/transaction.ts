@@ -253,5 +253,3 @@ export class MoneyFi {
     return MoneyFiBaseApiUrl;
   }
 }
-
-

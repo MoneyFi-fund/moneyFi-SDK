@@ -356,7 +356,7 @@ console.log(history);
 6. Submit the signed transaction to the blockchain
 7. Monitor transaction status
 
-### Claim referral reward Flow 
+### Claim referral reward Flow
 1. Call `getWithdrawTxPayload(params)` for on-chain withdrawal
 2. Deserialize the transaction in case of in Aptos transaction using Aptos SDK helpers
 3. Pass returned payload to the connected wallet for user signing
